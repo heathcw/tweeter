@@ -1,12 +1,13 @@
 import { useState } from "react";
 
 interface Props {
-    keyDownFunction: React.KeyboardEventHandler<HTMLInputElement>
+    keyDownFunction: React.KeyboardEventHandler<HTMLInputElement>;
+    setAlias: (value: string) => void;
+    setPassword: (value: string) => void;
 }
 
 const AuthenticationFields = (props: Props) => { 
-    const [alias, setAlias] = useState("");
-    const [password, setPassword] = useState("");
+  
     return (
         <>
         <div className="form-floating">
@@ -17,7 +18,7 @@ const AuthenticationFields = (props: Props) => {
             id="aliasInput"
             placeholder="name@example.com"
             onKeyDown={props.keyDownFunction}
-            onChange={(event) => setAlias(event.target.value)}
+            onChange={(event) => props.setAlias(event.target.value)}
           />
           <label htmlFor="aliasInput">Alias</label>
         </div>
@@ -28,7 +29,7 @@ const AuthenticationFields = (props: Props) => {
             id="passwordInput"
             placeholder="Password"
             onKeyDown={props.keyDownFunction}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => props.setPassword(event.target.value)}
           />
           <label htmlFor="passwordInput">Password</label>
         </div>

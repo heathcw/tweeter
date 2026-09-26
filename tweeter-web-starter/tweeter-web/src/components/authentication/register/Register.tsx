@@ -159,7 +159,7 @@ const Register = () => {
           />
           <label htmlFor="lastNameInput">Last Name</label>
         </div>
-        <AuthenticationFields keyDownFunction={registerOnEnter} />
+        <AuthenticationFields keyDownFunction={registerOnEnter} setAlias={setAlias} setPassword={setPassword} />
         <div className="form-floating mb-3">
           <input
             type="file"
