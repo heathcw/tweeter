@@ -4,16 +4,15 @@ import { ToastType } from "../toaster/Toast";
 import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
 import Tooltip from "react-bootstrap/esm/Tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useMessageActions } from "../toaster/MessageHooks";
 
 const OAuth = () => { 
-    const { displayToast } = useContext(ToastActionsContext);
+    const { displayInfoMessage } = useMessageActions();
 
     const displayInfoMessageWithDarkBackground = (message: string): void => {
-        displayToast(
-          ToastType.Info,
+        displayInfoMessage(
           message,
           3000,
-          undefined,
           "text-white bg-primary"
         );
       };
