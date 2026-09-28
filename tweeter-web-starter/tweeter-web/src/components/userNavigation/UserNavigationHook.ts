@@ -1,7 +1,7 @@
 import { AuthToken, User, FakeData } from "tweeter-shared";
 import { useUserInfo, useUserInfoActions } from "../userInfo/UserHooks";
 import { useMessageActions } from "../toaster/MessageHooks";
-import { useNavigate } from "react-router/dist/lib/hooks";
+import { useNavigate } from "react-router-dom";
 
 export const useUserNavigation = () => {
     const { displayErrorMessage } = useMessageActions();
