@@ -10,8 +10,6 @@ import {
   UserItemView,
 } from "../../presenter/UserItemPresenter";
 
-export const PAGE_SIZE = 10;
-
 interface Props {
   featurePath: string;
   presenterFactory: (view: UserItemView) => UserItemPresenter;
