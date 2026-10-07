@@ -2,7 +2,11 @@ import { UserService } from "../model.service/UserService";
 import type { AuthToken } from "tweeter-shared";
 
 export interface AppNavbarView {
-  displayInfoMessage: (message: string, duration: number, bootstrapClasses?: string | undefined) => string;
+  displayInfoMessage: (
+    message: string,
+    duration: number,
+    bootstrapClasses?: string | undefined,
+  ) => string;
   deleteMessage: (messageId: string) => void;
   clearUserInfo: () => void;
   navigate: (path: string) => void;

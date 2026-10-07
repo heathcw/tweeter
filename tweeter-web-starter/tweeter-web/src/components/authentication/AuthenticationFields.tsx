@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 interface Props {
     keyDownFunction: React.KeyboardEventHandler<HTMLInputElement>;
     setAlias: (value: string) => void;
