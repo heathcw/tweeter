@@ -8,6 +8,7 @@ import {
   AppNavbarPresenter,
   AppNavbarView,
 } from "../../presenter/AppNavbarPresenter";
+import { useRef } from "react";
 
 const AppNavbar = () => {
   const location = useLocation();
@@ -25,10 +26,13 @@ const AppNavbar = () => {
     deleteMessage: deleteMessage,
   };
 
-  const presenter = new AppNavbarPresenter(listener);
+  const presenterRef = useRef<AppNavbarPresenter | null>(null);
+  if (!presenterRef.current) {
+    presenterRef.current = new AppNavbarPresenter(listener);
+  }
 
   const logOut = async () => {
-    await presenter.logOut(authToken!);
+    await presenterRef.current!.logOut(authToken!);
   };
 
   return (

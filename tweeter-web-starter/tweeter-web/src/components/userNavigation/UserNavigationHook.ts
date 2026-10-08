@@ -2,6 +2,7 @@ import { UserNavigationPresenter } from "../../presenter/UserNavigationPresenter
 import { useUserInfo, useUserInfoActions } from "../userInfo/UserHooks";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
 export const useUserNavigation = () => {
   const { displayErrorMessage } = useMessageActions();
@@ -10,7 +11,10 @@ export const useUserNavigation = () => {
 
   const navigate = useNavigate();
 
-  const presenter: UserNavigationPresenter = new UserNavigationPresenter();
+  const presenterRef = useRef<UserNavigationPresenter | null>(null);
+  if (!presenterRef.current) {
+    presenterRef.current = new UserNavigationPresenter();
+  }
 
   return {
     navigateToUser: async (
@@ -20,9 +24,9 @@ export const useUserNavigation = () => {
       event.preventDefault();
 
       try {
-        const alias = presenter.extractAlias(event.target.toString());
+        const alias = presenterRef.current!.extractAlias(event.target.toString());
 
-        const toUser = await presenter.getUser(authToken!, alias);
+        const toUser = await presenterRef.current!.getUser(authToken!, alias);
 
         if (toUser) {
           if (!toUser.equals(displayedUser!)) {
