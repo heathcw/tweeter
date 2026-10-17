@@ -1,34 +1,30 @@
 import { AuthToken, Status } from "tweeter-shared";
-import { UserService } from "../model.service/UserService";
 import { StatusService } from "../model.service/StatusService";
+import { MessageView, Presenter } from "./Presenter";
 
-export interface PostStatusView {
-  displayInfoMessage: (
-    message: string,
-    duration: number,
-    bootstrapClasses?: string | undefined,
-  ) => string;
-  displayErrorMessage: (message: string) => void;
-  deleteMessage: (messageId: string) => void;
+export interface PostStatusView extends MessageView {
   setIsLoading: (isLoading: boolean) => void;
   setPost: (post: string) => void;
 }
 
-export class PostStatusPresenter {
-  private view: PostStatusView;
-  private service: StatusService;
+export class PostStatusPresenter extends Presenter<PostStatusView> {
+  private service: StatusService = new StatusService();
 
   public constructor(view: PostStatusView) {
-    this.view = view;
-    this.service = new StatusService();
+    super(view);
   }
 
-  public async submitPost(event: React.MouseEvent, post: string, currentUser: any, authToken: AuthToken) {
+  public async submitPost(
+    event: React.MouseEvent,
+    post: string,
+    currentUser: any,
+    authToken: AuthToken,
+  ) {
     event.preventDefault();
 
     var postingStatusToastId = "";
 
-    try {
+    this.doFailureReportingOperation(async () => {
       this.view.setIsLoading(true);
       postingStatusToastId = this.view.displayInfoMessage(
         "Posting status...",
@@ -41,13 +37,8 @@ export class PostStatusPresenter {
 
       this.view.setPost("");
       this.view.displayInfoMessage("Status posted!", 2000);
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to post the status because of exception: ${error}`
-      );
-    } finally {
-      this.view.deleteMessage(postingStatusToastId);
-      this.view.setIsLoading(false);
-    }
-  };
+    }, "post the status");
+    this.view.deleteMessage(postingStatusToastId);
+    this.view.setIsLoading(false);
+  }
 }

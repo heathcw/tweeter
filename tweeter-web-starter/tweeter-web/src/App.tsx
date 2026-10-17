@@ -14,11 +14,11 @@ import UserItemScroller from "./components/mainLayout/UserItemScroller";
 import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
 import { useUserInfo } from "./components/userInfo/UserHooks";
 import { FolloweePresenter } from "./presenter/FolloweePresenter";
-import { UserItemView } from "./presenter/UserItemPresenter";
 import { FollowerPresenter } from "./presenter/FollowerPresenter";
-import { StatusItemView } from "./presenter/StatusItemPresenter";
 import { StoryPresenter } from "./presenter/StoryPresenter";
 import { FeedPresenter } from "./presenter/FeedPresenter";
+import { Status, User } from "tweeter-shared";
+import { PageItemView } from "./presenter/PageItemPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfo();
@@ -57,7 +57,7 @@ const AuthenticatedRoutes = () => {
             <StatusItemScroller
               key={`feed-${displayedUser!.alias}`}
               featurePath="/feed"
-              presenterFactory={(view: StatusItemView) =>
+              presenterFactory={(view: PageItemView<Status>) =>
                 new FeedPresenter(view)
               }
             />
@@ -69,7 +69,7 @@ const AuthenticatedRoutes = () => {
             <StatusItemScroller
               key={`story-${displayedUser!.alias}`}
               featurePath="/story"
-              presenterFactory={(view: StatusItemView) =>
+              presenterFactory={(view: PageItemView<Status>) =>
                 new StoryPresenter(view)
               }
             />
@@ -81,7 +81,7 @@ const AuthenticatedRoutes = () => {
             <UserItemScroller
               key={`followees-${displayedUser!.alias}`}
               featurePath="/followees"
-              presenterFactory={(view: UserItemView) =>
+              presenterFactory={(view: PageItemView<User>) =>
                 new FolloweePresenter(view)
               }
             />
@@ -93,7 +93,7 @@ const AuthenticatedRoutes = () => {
             <UserItemScroller
               key={`followers-${displayedUser!.alias}`}
               featurePath="/followers"
-              presenterFactory={(view: UserItemView) =>
+              presenterFactory={(view: PageItemView<User>) =>
                 new FollowerPresenter(view)
               }
             />
