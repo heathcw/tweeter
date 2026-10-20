@@ -10,15 +10,16 @@ import Login from "./components/authentication/login/Login";
 import Register from "./components/authentication/register/Register";
 import MainLayout from "./components/mainLayout/MainLayout";
 import Toaster from "./components/toaster/Toaster";
-import UserItemScroller from "./components/mainLayout/UserItemScroller";
-import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
 import { useUserInfo } from "./components/userInfo/UserHooks";
-import { FolloweePresenter } from "./presenter/FolloweePresenter";
 import { FollowerPresenter } from "./presenter/FollowerPresenter";
-import { StoryPresenter } from "./presenter/StoryPresenter";
 import { FeedPresenter } from "./presenter/FeedPresenter";
 import { Status, User } from "tweeter-shared";
 import { PageItemView } from "./presenter/PageItemPresenter";
+import ItemScroller from "./components/mainLayout/ItemScroller";
+import StatusItem from "./components/statusItem/StatusItem";
+import UserItem from "./components/userItem/UserItem";
+import { StoryPresenter } from "./presenter/StoryPresenter";
+import { FolloweePresenter } from "./presenter/FolloweePresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfo();
@@ -54,49 +55,25 @@ const AuthenticatedRoutes = () => {
         <Route
           path="feed/:displayedUser"
           element={
-            <StatusItemScroller
-              key={`feed-${displayedUser!.alias}`}
-              featurePath="/feed"
-              presenterFactory={(view: PageItemView<Status>) =>
-                new FeedPresenter(view)
-              }
-            />
+            BuildStatusItemScroller("/feed", displayedUser!, (view: PageItemView<Status>) => new FeedPresenter(view))
           }
         />
         <Route
           path="story/:displayedUser"
           element={
-            <StatusItemScroller
-              key={`story-${displayedUser!.alias}`}
-              featurePath="/story"
-              presenterFactory={(view: PageItemView<Status>) =>
-                new StoryPresenter(view)
-              }
-            />
+            BuildStatusItemScroller("/story", displayedUser!, (view: PageItemView<Status>) => new StoryPresenter(view))
           }
         />
         <Route
           path="followees/:displayedUser"
           element={
-            <UserItemScroller
-              key={`followees-${displayedUser!.alias}`}
-              featurePath="/followees"
-              presenterFactory={(view: PageItemView<User>) =>
-                new FolloweePresenter(view)
-              }
-            />
+            BuildUserItemScroller("/followees", displayedUser!, (view: PageItemView<User>) => new FolloweePresenter(view))
           }
         />
         <Route
           path="followers/:displayedUser"
           element={
-            <UserItemScroller
-              key={`followers-${displayedUser!.alias}`}
-              featurePath="/followers"
-              presenterFactory={(view: PageItemView<User>) =>
-                new FollowerPresenter(view)
-              }
-            />
+            BuildUserItemScroller("/followers", displayedUser!, (view: PageItemView<User>) => new FollowerPresenter(view))
           }
         />
         <Route path="logout" element={<Navigate to="/login" />} />
@@ -120,5 +97,31 @@ const UnauthenticatedRoutes = () => {
     </Routes>
   );
 };
+
+const BuildStatusItemScroller = (featurePath: string, displayedUser: User, presenterFactory: (view: PageItemView<Status>) => any) => {
+  return (
+    <ItemScroller
+      key={`feed-${displayedUser!.alias}`}
+      featurePath={featurePath}
+      presenterFactory={presenterFactory}
+      itemComponentFactory={(item: Status, featurePath: string) => (
+        <StatusItem status={item} user={item.user} featurePath={featurePath} />
+      )}
+    />
+  );
+};
+
+const BuildUserItemScroller = (featurePath: string, displayedUser: User, presenterFactory: (view: PageItemView<User>) => any) => {
+ return (
+  <ItemScroller
+              key={`followers-${displayedUser!.alias}`}
+              featurePath={featurePath}
+              presenterFactory={presenterFactory}
+              itemComponentFactory={(item: User, featurePath: string) => (
+                <UserItem user={item} featurePath={featurePath} />
+              )}
+            />
+ )
+}
 
 export default App;

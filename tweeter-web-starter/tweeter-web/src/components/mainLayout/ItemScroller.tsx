@@ -1,34 +1,32 @@
 import { useState, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { User } from "tweeter-shared";
 import { useParams } from "react-router-dom";
-import UserItem from "../userItem/UserItem";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo, useUserInfoActions } from "../userInfo/UserHooks";
-import {
-  UserItemPresenter,
-} from "../../presenter/UserItemPresenter";
-import { PageItemView } from "../../presenter/PageItemPresenter";
+import { PageItemPresenter, PageItemView } from "../../presenter/PageItemPresenter";
 
-interface Props {
+export const PAGE_SIZE = 10;
+
+interface Props<T, V extends PageItemPresenter<T, any>> {
   featurePath: string;
-  presenterFactory: (view: PageItemView<User>) => UserItemPresenter;
+  presenterFactory: (view: PageItemView<T>) => V;
+  itemComponentFactory: (item: T, featurePath: string) => JSX.Element;
 }
 
-const UserItemScroller = (props: Props) => {
+const ItemScroller = <T, V extends PageItemPresenter<T, any>>(props: Props<T, V>) => {
   const { displayErrorMessage } = useMessageActions();
-  const [items, setItems] = useState<User[]>([]);
+  const [items, setItems] = useState<T[]>([]);
 
   const { displayedUser, authToken } = useUserInfo();
   const { setDisplayedUser } = useUserInfoActions();
   const { displayedUser: displayedUserAliasParam } = useParams();
 
-  const listener: PageItemView<User> = {
-    addItems: (newItems: User[]) =>
+  const listener: PageItemView<T> = {
+    addItems: (newItems: T[]) =>
       setItems((previousItems) => [...previousItems, ...newItems]),
     displayErrorMessage: displayErrorMessage,
   };
-  const presenterRef = useRef<UserItemPresenter | null>(null);
+  const presenterRef = useRef<V | null>(null);
   if (!presenterRef.current) {
     presenterRef.current = props.presenterFactory(listener);
   }
@@ -40,11 +38,13 @@ const UserItemScroller = (props: Props) => {
       displayedUserAliasParam &&
       displayedUserAliasParam != displayedUser!.alias
     ) {
-      presenterRef.current!.getUser(authToken!, displayedUserAliasParam!).then((toUser) => {
-        if (toUser) {
-          setDisplayedUser(toUser);
-        }
-      });
+      presenterRef
+        .current!.getUser(authToken!, displayedUserAliasParam!)
+        .then((toUser) => {
+          if (toUser) {
+            setDisplayedUser(toUser);
+          }
+        });
     }
   }, [displayedUserAliasParam]);
 
@@ -77,7 +77,7 @@ const UserItemScroller = (props: Props) => {
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-            <UserItem user={item} featurePath={props.featurePath} />
+            {props.itemComponentFactory(item, props.featurePath)}
           </div>
         ))}
       </InfiniteScroll>
@@ -85,4 +85,4 @@ const UserItemScroller = (props: Props) => {
   );
 };
 
-export default UserItemScroller;
+export default ItemScroller;
