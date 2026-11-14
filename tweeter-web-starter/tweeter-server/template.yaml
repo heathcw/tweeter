@@ -46,6 +46,81 @@ Resources:
         Method: POST
       Properties: '{"description":"Register a user. Returns the user and an authentication token."}'
 
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterLogin
+      CodeUri: build/LoginFunction
+      Handler: index.handler
+      Events:
+        LoginPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /auth/login
+            Method: post
+
+  LoginDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /auth/login
+        Method: POST
+      Properties: '{"description":"Sign in a user. Returns the user and an authentication token."}'
+
+  LogoutFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterLogout
+      CodeUri: build/LogoutFunction
+      Handler: index.handler
+      Events:
+        LogoutPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /auth/logout
+            Method: post
+
+  LogoutDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /auth/logout
+        Method: POST
+      Properties: '{"description":"Sign out the user identified by the authentication token in the request body."}'
+
+  GetUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterGetUser
+      CodeUri: build/GetUserFunction
+      Handler: index.handler
+      Events:
+        GetUserPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /user/get
+            Method: post
+
+  GetUserDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /user/get
+        Method: POST
+      Properties: '{"description":"Return the user for an alias. The authentication token is included in the request body."}'
+
 Outputs:
   ApiUrl:
     Description: Base URL. Paste this into ServerFacade, with no trailing slash.

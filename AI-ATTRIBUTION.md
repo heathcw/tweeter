@@ -11,3 +11,9 @@
 - Tool: Cursor (Grok 4.7)
 - Task: Implement the register feature end to end. Add the register request and auth response, a server UserService that returns FakeData, a register lambda, a SAM route for POST /auth/register, and a client ServerFacade that UserService.register calls.
 - Review: ServerFacade and ApiGateway had errors which I told AI to fix. Other than the errors, the register lambda looks good and works well.
+
+## 2026-11-13: tweeter-web-starter/tweeter-shared/src/model/net/LoginRequest.ts (new file), tweeter-web-starter/tweeter-shared/src/model/net/LogoutRequest.ts (new file), tweeter-web-starter/tweeter-shared/src/model/net/GetUserRequest.ts (new file), tweeter-web-starter/tweeter-shared/src/model/net/GetUserResponse.ts (new file), tweeter-web-starter/tweeter-shared/src/index.ts, tweeter-web-starter/tweeter-server/src/service/UserService.ts, tweeter-web-starter/tweeter-server/src/lambda/LoginLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/LogoutLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/GetUserLambda.ts (new file), tweeter-web-starter/tweeter-server/template.yaml, tweeter-web-starter/tweeter-server/package.json, tweeter-web-starter/tweeter-web/src/model.network/ServerFacade.ts, tweeter-web-starter/tweeter-web/src/model.service/UserService.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (Grok 4.7)
+- Task: Connect login, logout, and get user to their own lambdas. Login returns the FakeData user and token. Logout and get user send the auth token in the JSON body. The server does not check the token value yet.
+- Review: login, logout, and register lambda functions all look good and function correctly.
