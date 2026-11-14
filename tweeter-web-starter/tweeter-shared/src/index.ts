@@ -12,6 +12,8 @@ export type { TweeterRequest } from "./model/net/TweeterRequest";
 export type { TweeterResponse } from "./model/net/TweeterResponse";
 export type { PagedItemRequest } from "./model/net/PagedItemRequest";
 export type { PagedItemResponse } from "./model/net/PagedItemResponse";
+export type { RegisterRequest } from "./model/net/RegisterRequest";
+export type { AuthResponse } from "./model/net/AuthResponse";
 
 // All classes that should be avaialble to other modules need to exported here. export * does not work when
 // uploading to lambda. Instead we have to list each export.

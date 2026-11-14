@@ -5,3 +5,9 @@
 - Tool: Cursor (Grok 4.7)
 - Task: Add the shared request, response, and DTO contracts for Milestone 3, and create the tweeter-server module with a dependency on tweeter-shared. No feature logic yet.
 - Review: Examined the created DTO objects and request and response classes. It all seems good to me
+
+## 2026-11-13: tweeter-web-starter/tweeter-shared/src/model/net/RegisterRequest.ts (new file), tweeter-web-starter/tweeter-shared/src/model/net/AuthResponse.ts (new file), tweeter-web-starter/tweeter-shared/src/index.ts, tweeter-web-starter/tweeter-server/src/service/ClientError.ts (new file), tweeter-web-starter/tweeter-server/src/service/UserService.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/ApiGateway.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/RegisterLambda.ts (new file), tweeter-web-starter/tweeter-server/template.yaml (new file), tweeter-web-starter/tweeter-server/.gitignore, tweeter-web-starter/tweeter-server/package.json, tweeter-web-starter/package-lock.json, tweeter-web-starter/tweeter-web/src/model.network/ClientCommunicator.ts (new file), tweeter-web-starter/tweeter-web/src/model.network/ServerFacade.ts (new file), tweeter-web-starter/tweeter-web/src/model.service/UserService.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (Grok 4.7)
+- Task: Implement the register feature end to end. Add the register request and auth response, a server UserService that returns FakeData, a register lambda, a SAM route for POST /auth/register, and a client ServerFacade that UserService.register calls.
+- Review: ServerFacade and ApiGateway had errors which I told AI to fix. Other than the errors, the register lambda looks good and works well.

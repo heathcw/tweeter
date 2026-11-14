@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Tweeter web API
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Architectures:
+      - x86_64
+    Timeout: 10
+    MemorySize: 128
+
+Resources:
+  TweeterApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: TweeterApi
+      StageName: dev
+      Cors:
+        AllowMethods: "'POST,OPTIONS'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'*'"
+
+  RegisterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterRegister
+      CodeUri: build/RegisterFunction
+      Handler: index.handler
+      Events:
+        RegisterPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /auth/register
+            Method: post
+
+  RegisterDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /auth/register
+        Method: POST
+      Properties: '{"description":"Register a user. Returns the user and an authentication token."}'
+
+Outputs:
+  ApiUrl:
+    Description: Base URL. Paste this into ServerFacade, with no trailing slash.
+    Value: !Sub "https://${TweeterApi}.execute-api.${AWS::Region}.amazonaws.com/dev"

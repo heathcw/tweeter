@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf dist"
+    "bundle": "esbuild src/lambda/RegisterLambda.ts --bundle --platform=node --target=node20 --outfile=build/RegisterFunction/index.js --sourcemap",
+    "clean": "rimraf dist build"
   },
   "dependencies": {
     "tweeter-shared": "file:../tweeter-shared"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^20.11.24",
+    "esbuild": "^0.25.0",
     "rimraf": "^5.0.5",
     "typescript": "^5.0.2"
   }
