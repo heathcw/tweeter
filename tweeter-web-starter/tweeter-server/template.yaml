@@ -121,6 +121,81 @@ Resources:
         Method: POST
       Properties: '{"description":"Return the user for an alias. The authentication token is included in the request body."}'
 
+  PostStatusFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterPostStatus
+      CodeUri: build/PostStatusFunction
+      Handler: index.handler
+      Events:
+        PostStatusPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /status/post
+            Method: post
+
+  PostStatusDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /status/post
+        Method: POST
+      Properties: '{"description":"Post a status for the authenticated user. The status is included in the request body."}'
+
+  StoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterStory
+      CodeUri: build/StoryFunction
+      Handler: index.handler
+      Events:
+        StoryPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /status/story
+            Method: post
+
+  StoryDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /status/story
+        Method: POST
+      Properties: '{"description":"Return one page of a user story. Send the last status from the previous page, or null for the first page."}'
+
+  FeedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterFeed
+      CodeUri: build/FeedFunction
+      Handler: index.handler
+      Events:
+        FeedPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /status/feed
+            Method: post
+
+  FeedDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /status/feed
+        Method: POST
+      Properties: '{"description":"Return one page of a user feed. Send the last status from the previous page, or null for the first page."}'
+
 Outputs:
   ApiUrl:
     Description: Base URL. Paste this into ServerFacade, with no trailing slash.

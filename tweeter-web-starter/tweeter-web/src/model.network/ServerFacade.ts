@@ -7,7 +7,12 @@ import {
   GetUserResponse,
   LoginRequest,
   LogoutRequest,
+  PagedItemRequest,
+  PagedItemResponse,
+  PostStatusRequest,
   RegisterRequest,
+  Status,
+  StatusDto,
   TweeterResponse,
   User,
 } from "tweeter-shared";
@@ -63,6 +68,61 @@ export class ServerFacade {
     } else {
       console.error(response);
       throw new Error(response.message ?? "Unable to get user");
+    }
+  }
+
+  public async postStatus(request: PostStatusRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<
+      PostStatusRequest,
+      TweeterResponse
+    >(request, "/status/post");
+
+    if (!response.success) {
+      console.error(response);
+      throw new Error(response.message ?? "Post status failed");
+    }
+  }
+
+  public async loadMoreStoryItems(
+    request: PagedItemRequest<StatusDto>,
+  ): Promise<[Status[], boolean]> {
+    const response = await this.clientCommunicator.doPost<
+      PagedItemRequest<StatusDto>,
+      PagedItemResponse<StatusDto>
+    >(request, "/status/story");
+
+    return this.toStatusPage(response);
+  }
+
+  public async loadMoreFeedItems(
+    request: PagedItemRequest<StatusDto>,
+  ): Promise<[Status[], boolean]> {
+    const response = await this.clientCommunicator.doPost<
+      PagedItemRequest<StatusDto>,
+      PagedItemResponse<StatusDto>
+    >(request, "/status/feed");
+
+    return this.toStatusPage(response);
+  }
+
+  private toStatusPage(
+    response: PagedItemResponse<StatusDto>,
+  ): [Status[], boolean] {
+    if (response.success) {
+      if (response.items == null) {
+        throw new Error("No statuses found");
+      }
+      const items = response.items.map((dto) => {
+        const status = Status.fromDto(dto);
+        if (status === null) {
+          throw new Error("Invalid status");
+        }
+        return status;
+      });
+      return [items, response.hasMore];
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "Unable to load statuses");
     }
   }
 

@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "bundle": "npm run bundle:register && npm run bundle:login && npm run bundle:logout && npm run bundle:get-user",
+    "bundle": "npm run bundle:register && npm run bundle:login && npm run bundle:logout && npm run bundle:get-user && npm run bundle:post-status && npm run bundle:story && npm run bundle:feed",
     "bundle:register": "esbuild src/lambda/RegisterLambda.ts --bundle --platform=node --target=node20 --outfile=build/RegisterFunction/index.js --sourcemap",
     "bundle:login": "esbuild src/lambda/LoginLambda.ts --bundle --platform=node --target=node20 --outfile=build/LoginFunction/index.js --sourcemap",
     "bundle:logout": "esbuild src/lambda/LogoutLambda.ts --bundle --platform=node --target=node20 --outfile=build/LogoutFunction/index.js --sourcemap",
     "bundle:get-user": "esbuild src/lambda/GetUserLambda.ts --bundle --platform=node --target=node20 --outfile=build/GetUserFunction/index.js --sourcemap",
+    "bundle:post-status": "esbuild src/lambda/PostStatusLambda.ts --bundle --platform=node --target=node20 --outfile=build/PostStatusFunction/index.js --sourcemap",
+    "bundle:story": "esbuild src/lambda/StoryLambda.ts --bundle --platform=node --target=node20 --outfile=build/StoryFunction/index.js --sourcemap",
+    "bundle:feed": "esbuild src/lambda/FeedLambda.ts --bundle --platform=node --target=node20 --outfile=build/FeedFunction/index.js --sourcemap",
     "clean": "rimraf dist build"
   },
   "dependencies": {

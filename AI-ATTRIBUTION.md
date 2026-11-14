@@ -17,3 +17,9 @@
 - Tool: Cursor (Grok 4.7)
 - Task: Connect login, logout, and get user to their own lambdas. Login returns the FakeData user and token. Logout and get user send the auth token in the JSON body. The server does not check the token value yet.
 - Review: login, logout, and register lambda functions all look good and function correctly.
+
+## 2026-11-13: tweeter-web-starter/tweeter-shared/src/model/net/PostStatusRequest.ts (new file), tweeter-web-starter/tweeter-shared/src/index.ts, tweeter-web-starter/tweeter-server/src/service/StatusService.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/PostStatusLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/StoryLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/FeedLambda.ts (new file), tweeter-web-starter/tweeter-server/template.yaml, tweeter-web-starter/tweeter-server/package.json, tweeter-web-starter/tweeter-web/src/model.network/ServerFacade.ts, tweeter-web-starter/tweeter-web/src/model.service/StatusService.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (Grok 4.7)
+- Task: Connect post status, story, and feed to their own lambdas. Story and feed use the shared paged request and return FakeData status pages. Post status accepts a status and does not store it.
+- Review: No errors this time. FeedLambda and StoryLambda are very similar and probably don't need to be separate functions. We will deal with that later.
