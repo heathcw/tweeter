@@ -19,6 +19,13 @@ export type { LogoutRequest } from "./model/net/LogoutRequest";
 export type { GetUserRequest } from "./model/net/GetUserRequest";
 export type { GetUserResponse } from "./model/net/GetUserResponse";
 export type { PostStatusRequest } from "./model/net/PostStatusRequest";
+export type {
+  TargetUserRequest,
+  IsFollowerRequest,
+  CountResponse,
+  FollowActionResponse,
+  IsFollowerResponse,
+} from "./model/net/FollowRequests";
 
 // All classes that should be avaialble to other modules need to exported here. export * does not work when
 // uploading to lambda. Instead we have to list each export.

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "bundle": "npm run bundle:register && npm run bundle:login && npm run bundle:logout && npm run bundle:get-user && npm run bundle:post-status && npm run bundle:story && npm run bundle:feed",
+    "bundle": "npm run bundle:register && npm run bundle:login && npm run bundle:logout && npm run bundle:get-user && npm run bundle:post-status && npm run bundle:story && npm run bundle:feed && npm run bundle:follow && npm run bundle:unfollow && npm run bundle:is-follower && npm run bundle:follower-count && npm run bundle:followee-count && npm run bundle:follower-list && npm run bundle:followee-list",
     "bundle:register": "esbuild src/lambda/RegisterLambda.ts --bundle --platform=node --target=node20 --outfile=build/RegisterFunction/index.js --sourcemap",
     "bundle:login": "esbuild src/lambda/LoginLambda.ts --bundle --platform=node --target=node20 --outfile=build/LoginFunction/index.js --sourcemap",
     "bundle:logout": "esbuild src/lambda/LogoutLambda.ts --bundle --platform=node --target=node20 --outfile=build/LogoutFunction/index.js --sourcemap",
@@ -12,6 +12,13 @@
     "bundle:post-status": "esbuild src/lambda/PostStatusLambda.ts --bundle --platform=node --target=node20 --outfile=build/PostStatusFunction/index.js --sourcemap",
     "bundle:story": "esbuild src/lambda/StoryLambda.ts --bundle --platform=node --target=node20 --outfile=build/StoryFunction/index.js --sourcemap",
     "bundle:feed": "esbuild src/lambda/FeedLambda.ts --bundle --platform=node --target=node20 --outfile=build/FeedFunction/index.js --sourcemap",
+    "bundle:follow": "esbuild src/lambda/FollowLambda.ts --bundle --platform=node --target=node20 --outfile=build/FollowFunction/index.js --sourcemap",
+    "bundle:unfollow": "esbuild src/lambda/UnfollowLambda.ts --bundle --platform=node --target=node20 --outfile=build/UnfollowFunction/index.js --sourcemap",
+    "bundle:is-follower": "esbuild src/lambda/IsFollowerLambda.ts --bundle --platform=node --target=node20 --outfile=build/IsFollowerFunction/index.js --sourcemap",
+    "bundle:follower-count": "esbuild src/lambda/FollowerCountLambda.ts --bundle --platform=node --target=node20 --outfile=build/FollowerCountFunction/index.js --sourcemap",
+    "bundle:followee-count": "esbuild src/lambda/FolloweeCountLambda.ts --bundle --platform=node --target=node20 --outfile=build/FolloweeCountFunction/index.js --sourcemap",
+    "bundle:follower-list": "esbuild src/lambda/FollowerListLambda.ts --bundle --platform=node --target=node20 --outfile=build/FollowerListFunction/index.js --sourcemap",
+    "bundle:followee-list": "esbuild src/lambda/FolloweeListLambda.ts --bundle --platform=node --target=node20 --outfile=build/FolloweeListFunction/index.js --sourcemap",
     "clean": "rimraf dist build"
   },
   "dependencies": {

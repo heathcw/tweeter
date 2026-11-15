@@ -196,6 +196,181 @@ Resources:
         Method: POST
       Properties: '{"description":"Return one page of a user feed. Send the last status from the previous page, or null for the first page."}'
 
+  FollowFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterFollow
+      CodeUri: build/FollowFunction
+      Handler: index.handler
+      Events:
+        FollowPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /follow
+            Method: post
+
+  FollowDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /follow
+        Method: POST
+      Properties: '{"description":"Follow a user. Returns that user follower count and followee count."}'
+
+  UnfollowFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterUnfollow
+      CodeUri: build/UnfollowFunction
+      Handler: index.handler
+      Events:
+        UnfollowPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /unfollow
+            Method: post
+
+  UnfollowDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /unfollow
+        Method: POST
+      Properties: '{"description":"Unfollow a user. Returns that user follower count and followee count."}'
+
+  IsFollowerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterIsFollower
+      CodeUri: build/IsFollowerFunction
+      Handler: index.handler
+      Events:
+        IsFollowerPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /follow/isFollower
+            Method: post
+
+  IsFollowerDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /follow/isFollower
+        Method: POST
+      Properties: '{"description":"Report whether the user is a follower of the selected user. The authentication token is in the request body."}'
+
+  FollowerCountFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterFollowerCount
+      CodeUri: build/FollowerCountFunction
+      Handler: index.handler
+      Events:
+        FollowerCountPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /follower/count
+            Method: post
+
+  FollowerCountDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /follower/count
+        Method: POST
+      Properties: '{"description":"Return the follower count for a user."}'
+
+  FolloweeCountFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterFolloweeCount
+      CodeUri: build/FolloweeCountFunction
+      Handler: index.handler
+      Events:
+        FolloweeCountPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /followee/count
+            Method: post
+
+  FolloweeCountDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /followee/count
+        Method: POST
+      Properties: '{"description":"Return the followee count for a user."}'
+
+  FollowerListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterFollowerList
+      CodeUri: build/FollowerListFunction
+      Handler: index.handler
+      Events:
+        FollowerListPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /follower/list
+            Method: post
+
+  FollowerListDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /follower/list
+        Method: POST
+      Properties: '{"description":"Return one page of followers. Send the last user from the previous page, or null for the first page."}'
+
+  FolloweeListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TweeterFolloweeList
+      CodeUri: build/FolloweeListFunction
+      Handler: index.handler
+      Events:
+        FolloweeListPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TweeterApi
+            Path: /followee/list
+            Method: post
+
+  FolloweeListDocumentation:
+    Type: AWS::ApiGateway::DocumentationPart
+    DependsOn: TweeterApi
+    Properties:
+      RestApiId: !Ref TweeterApi
+      Location:
+        Type: METHOD
+        Path: /followee/list
+        Method: POST
+      Properties: '{"description":"Return one page of followees. Send the last user from the previous page, or null for the first page."}'
+
 Outputs:
   ApiUrl:
     Description: Base URL. Paste this into ServerFacade, with no trailing slash.

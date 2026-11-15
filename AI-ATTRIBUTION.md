@@ -23,3 +23,9 @@
 - Tool: Cursor (Grok 4.7)
 - Task: Connect post status, story, and feed to their own lambdas. Story and feed use the shared paged request and return FakeData status pages. Post status accepts a status and does not store it.
 - Review: No errors this time. FeedLambda and StoryLambda are very similar and probably don't need to be separate functions. We will deal with that later.
+
+## 2026-11-14: tweeter-web-starter/tweeter-shared/src/model/net/FollowRequests.ts (new file), tweeter-web-starter/tweeter-shared/src/index.ts, tweeter-web-starter/tweeter-server/src/service/FollowService.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/followHandlers.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/FollowLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/UnfollowLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/IsFollowerLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/FollowerCountLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/FolloweeCountLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/FollowerListLambda.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/FolloweeListLambda.ts (new file), tweeter-web-starter/tweeter-server/template.yaml, tweeter-web-starter/tweeter-server/package.json, tweeter-web-starter/tweeter-web/src/model.network/ServerFacade.ts, tweeter-web-starter/tweeter-web/src/model.service/FollowService.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (Grok 4.7)
+- Task: Connect the seven follow features to their own lambdas. Follow and unfollow return both counts. The list routes reuse the paged request. Counts and is-follower still come from FakeData. Shared handler helpers keep the similar lambdas from copying the same code.
+- Review: This all looks good to me and appears to work fine

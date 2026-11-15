@@ -1,15 +1,28 @@
-import { AuthToken, User, FakeData } from "tweeter-shared";
+// AI-assisted: see AI-ATTRIBUTION.md
+
+import {
+  AuthToken,
+  IsFollowerRequest,
+  PagedItemRequest,
+  TargetUserRequest,
+  User,
+  UserDto,
+} from "tweeter-shared";
+import { ServerFacade } from "../model.network/ServerFacade";
 import { Service } from "./Service";
 
 export class FollowService implements Service {
+  private serverFacade = new ServerFacade();
+
   public async loadMoreFollowees(
     authToken: AuthToken,
     userAlias: string,
     pageSize: number,
     lastItem: User | null,
   ): Promise<[User[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
+    return this.serverFacade.loadMoreFollowees(
+      this.pageRequest(authToken, userAlias, pageSize, lastItem),
+    );
   }
 
   public async loadMoreFollowers(
@@ -18,60 +31,43 @@ export class FollowService implements Service {
     pageSize: number,
     lastItem: User | null,
   ): Promise<[User[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
+    return this.serverFacade.loadMoreFollowers(
+      this.pageRequest(authToken, userAlias, pageSize, lastItem),
+    );
   }
 
   public async unfollow(
     authToken: AuthToken,
     userToUnfollow: User,
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the unfollow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(
-      authToken,
-      userToUnfollow,
+    return this.serverFacade.unfollow(
+      this.targetRequest(authToken, userToUnfollow),
     );
-    const followeeCount = await this.getFolloweeCount(
-      authToken,
-      userToUnfollow,
-    );
-
-    return [followerCount, followeeCount];
   }
 
   public async follow(
     authToken: AuthToken,
     userToFollow: User,
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the follow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(authToken, userToFollow);
-    const followeeCount = await this.getFolloweeCount(authToken, userToFollow);
-
-    return [followerCount, followeeCount];
+    return this.serverFacade.follow(this.targetRequest(authToken, userToFollow));
   }
 
   public async getFollowerCount(
     authToken: AuthToken,
     user: User,
   ): Promise<number> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getFollowerCount(user.alias);
+    return this.serverFacade.getFollowerCount(
+      this.targetRequest(authToken, user),
+    );
   }
 
   public async getFolloweeCount(
     authToken: AuthToken,
     user: User,
   ): Promise<number> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getFolloweeCount(user.alias);
+    return this.serverFacade.getFolloweeCount(
+      this.targetRequest(authToken, user),
+    );
   }
 
   public async getIsFollowerStatus(
@@ -79,7 +75,32 @@ export class FollowService implements Service {
     user: User,
     selectedUser: User,
   ): Promise<boolean> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.isFollower();
+    const request: IsFollowerRequest = {
+      token: authToken.token,
+      user: user.toDto(),
+      selectedUser: selectedUser.toDto(),
+    };
+    return this.serverFacade.getIsFollowerStatus(request);
+  }
+
+  private targetRequest(authToken: AuthToken, user: User): TargetUserRequest {
+    return {
+      token: authToken.token,
+      user: user.toDto(),
+    };
+  }
+
+  private pageRequest(
+    authToken: AuthToken,
+    userAlias: string,
+    pageSize: number,
+    lastItem: User | null,
+  ): PagedItemRequest<UserDto> {
+    return {
+      token: authToken.token,
+      userAlias: userAlias,
+      pageSize: pageSize,
+      lastItem: lastItem === null ? null : lastItem.toDto(),
+    };
   }
 }
