@@ -29,3 +29,9 @@
 - Tool: Cursor (Grok 4.7)
 - Task: Connect the seven follow features to their own lambdas. Follow and unfollow return both counts. The list routes reuse the paged request. Counts and is-follower still come from FakeData. Shared handler helpers keep the similar lambdas from copying the same code.
 - Review: This all looks good to me and appears to work fine
+
+## 2026-11-15: tweeter-web-starter/tweeter-web/test/model.network/ServerFacade.test.ts (new file), tweeter-web-starter/tweeter-web/test/model.service/StatusService.test.ts (new file), tweeter-web-starter/tweeter-web/package.json, tweeter-web-starter/package-lock.json, AI-ATTRIBUTION.md
+
+- Tool: Cursor (Grok 4.7)
+- Task: Add integration tests that call the deployed API. ServerFacade tests cover register, a follower page, and follower count. StatusService tests a successful story page against FakeData values.
+- Review: I like how the tests follow the pattern of descirbe, beforeeach, it, and expect. However, they use no mocks or spies
