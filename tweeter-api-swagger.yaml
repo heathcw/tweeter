@@ -1,0 +1,776 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: "TweeterApi"
+host: "iodbhsw2hl.execute-api.us-east-2.amazonaws.com"
+basePath: "/dev"
+schemes:
+- "https"
+paths:
+  /auth/login:
+    post:
+      description: "Sign in a user. Returns the user and an authentication token."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterLogin/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /auth/logout:
+    post:
+      description: "Sign out the user identified by the authentication token in the\
+        \ request body."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterLogout/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /auth/register:
+    post:
+      description: "Register a user. Returns the user and an authentication token."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterRegister/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /follow:
+    post:
+      description: "Follow a user. Returns that user follower count and followee count."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterFollow/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /follow/isFollower:
+    post:
+      description: "Report whether the user is a follower of the selected user. The\
+        \ authentication token is in the request body."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterIsFollower/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /followee/count:
+    post:
+      description: "Return the followee count for a user."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterFolloweeCount/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /followee/list:
+    post:
+      description: "Return one page of followees. Send the last user from the previous\
+        \ page, or null for the first page."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterFolloweeList/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /follower/count:
+    post:
+      description: "Return the follower count for a user."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterFollowerCount/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /follower/list:
+    post:
+      description: "Return one page of followers. Send the last user from the previous\
+        \ page, or null for the first page."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterFollowerList/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /status/feed:
+    post:
+      description: "Return one page of a user feed. Send the last status from the\
+        \ previous page, or null for the first page."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterFeed/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /status/post:
+    post:
+      description: "Post a status for the authenticated user. The status is included\
+        \ in the request body."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterPostStatus/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /status/story:
+    post:
+      description: "Return one page of a user story. Send the last status from the\
+        \ previous page, or null for the first page."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterStory/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /unfollow:
+    post:
+      description: "Unfollow a user. Returns that user follower count and followee\
+        \ count."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterUnfollow/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+  /user/get:
+    post:
+      description: "Return the user for an alias. The authentication token is included\
+        \ in the request body."
+      responses:
+        "200":
+          description: "Success. The JSON body has success set to true."
+        "400":
+          description: "Bad request. A required field was missing or invalid. The\
+            \ JSON body has errorMessage."
+        "500":
+          description: "Internal server error. The JSON body has errorMessage."
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "arn:aws:apigateway:us-east-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-2:006952505991:function:TweeterGetUser/invocations"
+        httpMethod: "POST"
+        responses:
+          default:
+            statusCode: "200"
+          ".*\"statusCode\"\\s*:\\s*500.*":
+            statusCode: "500"
+          ".*\"statusCode\"\\s*:\\s*400.*":
+            statusCode: "400"
+        passthroughBehavior: "when_no_match"
+        responseTransferMode: "BUFFERED"
+    options:
+      summary: "CORS support"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Default response for CORS method"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: "{}\n"
+        requestTemplates:
+          application/json: "{\n  \"statusCode\" : 200\n}\n"
+        passthroughBehavior: "when_no_match"
+x-amazon-apigateway-security-policy: "TLS_1_0"

@@ -35,3 +35,15 @@
 - Tool: Cursor (Grok 4.7)
 - Task: Add integration tests that call the deployed API. ServerFacade tests cover register, a follower page, and follower count. StatusService tests a successful story page against FakeData values.
 - Review: I like how the tests follow the pattern of descirbe, beforeeach, it, and expect. However, they use no mocks or spies
+
+## 2026-11-16: tweeter-api-swagger.yaml (new file), post-status-sequence.pdf (new file), AI-ATTRIBUTION.md
+
+- Tool: Cursor (Grok 4.7)
+- Task: Publish API documentation version 1.0 for the dev stage and export the Swagger file with API Gateway extensions. Each POST method has a description and documents status codes 200, 400, and 500. Draw the sequence diagram for a successful status post, from PostStatus.submitPost through API Gateway to listener.displayInfoMessage("Status posted!", 2000).
+- Review: The sequence is clean and easy to follow. The yaml had most of what it needed except for integration responses.
+
+## 2026-11-17: tweeter-api-swagger.yaml, AI-ATTRIBUTION.md
+
+- Tool: Cursor (Grok 4.7)
+- Task: Add integration responses for HTTP 200, 400, and 500 on each POST method, deploy them to the dev stage, and export the Swagger file again. The lambda stays a proxy integration. A normal login still returns 200, and an empty alias still returns 400.
+- Review: Now everything is great and very well documented.
