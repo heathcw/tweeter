@@ -59,3 +59,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Install the AWS SDK v3 DynamoDB and S3 clients plus bcryptjs and its requested type package. Add a reusable DynamoDB document client, deferred environment-based table configuration, concrete DynamoDB item types, record conversion helpers, DynamoDB TTL conversion, and a deterministic feed sort-key helper.
 - Review: The interfaces describing DB structure look good, and so do the functions describing DB access.
+
+## 2026-11-20: tweeter-web-starter/tweeter-server/template.yaml, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Define provisioned DynamoDB tables for users, authentication tokens, follows, stories, and precomputed feeds; add the inverse follows index and token TTL; define the encrypted public profile-image S3 bucket; inject resource names into every Lambda; and grant each Lambda table- and bucket-scoped access for only its feature set.
+- Review: Tables added to the yaml file in preparation for deployment to AWS. Looks good to me.

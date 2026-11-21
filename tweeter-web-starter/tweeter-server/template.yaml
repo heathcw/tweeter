@@ -2,6 +2,26 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Tweeter web API
 
+Parameters:
+  TableReadCapacity:
+    Type: Number
+    Default: 1
+    MinValue: 1
+    MaxValue: 25
+    Description: Provisioned read capacity for each table and index.
+  TableWriteCapacity:
+    Type: Number
+    Default: 1
+    MinValue: 1
+    MaxValue: 25
+    Description: Provisioned write capacity for each table and index.
+  FeedWriteCapacity:
+    Type: Number
+    Default: 5
+    MinValue: 1
+    MaxValue: 25
+    Description: Feed writes fan out, so this can be raised temporarily for passoff.
+
 Globals:
   Function:
     Runtime: nodejs20.x
@@ -9,8 +29,165 @@ Globals:
       - x86_64
     Timeout: 10
     MemorySize: 128
+    Environment:
+      Variables:
+        USERS_TABLE_NAME: !Ref UsersTable
+        AUTH_TOKENS_TABLE_NAME: !Ref AuthTokensTable
+        FOLLOWS_TABLE_NAME: !Ref FollowsTable
+        STORIES_TABLE_NAME: !Ref StoriesTable
+        FEEDS_TABLE_NAME: !Ref FeedsTable
+        FOLLOWEE_INDEX_NAME: followee-index
+        PROFILE_IMAGES_BUCKET_NAME: !Ref ProfileImagesBucket
+        TOKEN_INACTIVITY_MINUTES: "10"
 
 Resources:
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: alias
+          AttributeType: S
+      KeySchema:
+        - AttributeName: alias
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref TableReadCapacity
+        WriteCapacityUnits: !Ref TableWriteCapacity
+      SSESpecification:
+        SSEEnabled: true
+
+  AuthTokensTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: token
+          AttributeType: S
+      KeySchema:
+        - AttributeName: token
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref TableReadCapacity
+        WriteCapacityUnits: !Ref TableWriteCapacity
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: cleanupAt
+        Enabled: true
+
+  FollowsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: followerAlias
+          AttributeType: S
+        - AttributeName: followeeAlias
+          AttributeType: S
+      KeySchema:
+        - AttributeName: followerAlias
+          KeyType: HASH
+        - AttributeName: followeeAlias
+          KeyType: RANGE
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref TableReadCapacity
+        WriteCapacityUnits: !Ref TableWriteCapacity
+      GlobalSecondaryIndexes:
+        - IndexName: followee-index
+          KeySchema:
+            - AttributeName: followeeAlias
+              KeyType: HASH
+            - AttributeName: followerAlias
+              KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: !Ref TableReadCapacity
+            WriteCapacityUnits: !Ref TableWriteCapacity
+      SSESpecification:
+        SSEEnabled: true
+
+  StoriesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: authorAlias
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: authorAlias
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref TableReadCapacity
+        WriteCapacityUnits: !Ref TableWriteCapacity
+      SSESpecification:
+        SSEEnabled: true
+
+  FeedsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: ownerAlias
+          AttributeType: S
+        - AttributeName: feedSortKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ownerAlias
+          KeyType: HASH
+        - AttributeName: feedSortKey
+          KeyType: RANGE
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref TableReadCapacity
+        WriteCapacityUnits: !Ref FeedWriteCapacity
+      SSESpecification:
+        SSEEnabled: true
+
+  ProfileImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "tweeter-profile-images-${AWS::AccountId}-${AWS::Region}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  ProfileImagesBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ProfileImagesBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadProfileImages
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${ProfileImagesBucket.Arn}/image/*"
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt ProfileImagesBucket.Arn
+              - !Sub "${ProfileImagesBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
   TweeterApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -27,6 +204,13 @@ Resources:
       FunctionName: TweeterRegister
       CodeUri: build/RegisterFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - S3CrudPolicy:
+            BucketName: !Ref ProfileImagesBucket
       Events:
         RegisterPost:
           Type: Api
@@ -52,6 +236,11 @@ Resources:
       FunctionName: TweeterLogin
       CodeUri: build/LoginFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
       Events:
         LoginPost:
           Type: Api
@@ -77,6 +266,9 @@ Resources:
       FunctionName: TweeterLogout
       CodeUri: build/LogoutFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
       Events:
         LogoutPost:
           Type: Api
@@ -102,6 +294,11 @@ Resources:
       FunctionName: TweeterGetUser
       CodeUri: build/GetUserFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
       Events:
         GetUserPost:
           Type: Api
@@ -127,6 +324,15 @@ Resources:
       FunctionName: TweeterPostStatus
       CodeUri: build/PostStatusFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref StoriesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref FollowsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref FeedsTable
       Events:
         PostStatusPost:
           Type: Api
@@ -152,6 +358,11 @@ Resources:
       FunctionName: TweeterStory
       CodeUri: build/StoryFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref StoriesTable
       Events:
         StoryPost:
           Type: Api
@@ -177,6 +388,11 @@ Resources:
       FunctionName: TweeterFeed
       CodeUri: build/FeedFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref FeedsTable
       Events:
         FeedPost:
           Type: Api
@@ -202,6 +418,13 @@ Resources:
       FunctionName: TweeterFollow
       CodeUri: build/FollowFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref FollowsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
       Events:
         FollowPost:
           Type: Api
@@ -227,6 +450,13 @@ Resources:
       FunctionName: TweeterUnfollow
       CodeUri: build/UnfollowFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref FollowsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
       Events:
         UnfollowPost:
           Type: Api
@@ -252,6 +482,11 @@ Resources:
       FunctionName: TweeterIsFollower
       CodeUri: build/IsFollowerFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref FollowsTable
       Events:
         IsFollowerPost:
           Type: Api
@@ -277,6 +512,11 @@ Resources:
       FunctionName: TweeterFollowerCount
       CodeUri: build/FollowerCountFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
       Events:
         FollowerCountPost:
           Type: Api
@@ -302,6 +542,11 @@ Resources:
       FunctionName: TweeterFolloweeCount
       CodeUri: build/FolloweeCountFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
       Events:
         FolloweeCountPost:
           Type: Api
@@ -327,6 +572,13 @@ Resources:
       FunctionName: TweeterFollowerList
       CodeUri: build/FollowerListFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref FollowsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
       Events:
         FollowerListPost:
           Type: Api
@@ -352,6 +604,13 @@ Resources:
       FunctionName: TweeterFolloweeList
       CodeUri: build/FolloweeListFunction
       Handler: index.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref FollowsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
       Events:
         FolloweeListPost:
           Type: Api
@@ -375,3 +634,21 @@ Outputs:
   ApiUrl:
     Description: Base URL. Paste this into ServerFacade, with no trailing slash.
     Value: !Sub "https://${TweeterApi}.execute-api.${AWS::Region}.amazonaws.com/dev"
+  UsersTableName:
+    Description: DynamoDB users table.
+    Value: !Ref UsersTable
+  AuthTokensTableName:
+    Description: DynamoDB authentication tokens table.
+    Value: !Ref AuthTokensTable
+  FollowsTableName:
+    Description: DynamoDB follow relationships table.
+    Value: !Ref FollowsTable
+  StoriesTableName:
+    Description: DynamoDB user stories table.
+    Value: !Ref StoriesTable
+  FeedsTableName:
+    Description: DynamoDB precomputed feeds table.
+    Value: !Ref FeedsTable
+  ProfileImagesBucketName:
+    Description: S3 bucket containing public profile images.
+    Value: !Ref ProfileImagesBucket
