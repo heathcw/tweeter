@@ -1,0 +1,22 @@
+// AI-assisted: see AI-ATTRIBUTION.md
+
+import { AuthTokenDao } from "./AuthTokenDao";
+import { FeedDao } from "./FeedDao";
+import { FollowDao } from "./FollowDao";
+import { ImageDao } from "./ImageDao";
+import { StoryDao } from "./StoryDao";
+import { UserDao } from "./UserDao";
+
+/**
+ * Abstract Factory for all persistence dependencies. Services depend only on
+ * this interface and therefore do not know whether data is in DynamoDB, an
+ * in-memory test store, or another database.
+ */
+export interface DaoFactory {
+  createUserDao(): UserDao;
+  createAuthTokenDao(): AuthTokenDao;
+  createImageDao(): ImageDao;
+  createFollowDao(): FollowDao;
+  createStoryDao(): StoryDao;
+  createFeedDao(): FeedDao;
+}

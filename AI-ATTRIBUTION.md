@@ -47,3 +47,9 @@
 - Tool: Cursor (Grok 4.7)
 - Task: Add integration responses for HTTP 200, 400, and 500 on each POST method, deploy them to the dev stage, and export the Swagger file again. The lambda stays a proxy integration. A normal login still returns 200, and an empty alias still returns 400.
 - Review: Now everything is great and very well documented.
+
+## 2026-11-20: tweeter-web-starter/tweeter-server/src/dao/PersistenceTypes.ts (new file), tweeter-web-starter/tweeter-server/src/dao/UserDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/AuthTokenDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/ImageDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/FollowDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/StoryDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/FeedDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/DaoFactory.ts (new file), tweeter-web-starter/tweeter-server/src/dao/index.ts (new file), tweeter-web-starter/tweeter-server/src/index.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Define database-agnostic DAO interfaces for users, sessions, profile images, follows, stories, and feeds. Add persistence records, a generic page type, and an abstract DAO factory so services can receive data access dependencies without knowing which database implements them.
+- Review: The DAO interfaces are split cleanly with a useful DAOFactory. Looks good to me.
