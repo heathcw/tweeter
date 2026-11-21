@@ -53,3 +53,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Define database-agnostic DAO interfaces for users, sessions, profile images, follows, stories, and feeds. Add persistence records, a generic page type, and an abstract DAO factory so services can receive data access dependencies without knowing which database implements them.
 - Review: The DAO interfaces are split cleanly with a useful DAOFactory. Looks good to me.
+
+## 2026-11-20: tweeter-web-starter/tweeter-server/src/dao/dynamodb/PersistenceConfig.ts (new file), tweeter-web-starter/tweeter-server/src/dao/dynamodb/DynamoDbClient.ts (new file), tweeter-web-starter/tweeter-server/src/dao/dynamodb/DynamoDbItems.ts (new file), tweeter-web-starter/tweeter-server/src/dao/dynamodb/index.ts (new file), tweeter-web-starter/tweeter-server/package.json, tweeter-web-starter/tweeter-server/tsconfig.json, tweeter-web-starter/package-lock.json, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Install the AWS SDK v3 DynamoDB and S3 clients plus bcryptjs and its requested type package. Add a reusable DynamoDB document client, deferred environment-based table configuration, concrete DynamoDB item types, record conversion helpers, DynamoDB TTL conversion, and a deterministic feed sort-key helper.
+- Review: The interfaces describing DB structure look good, and so do the functions describing DB access.
