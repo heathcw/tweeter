@@ -1,6 +1,7 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
 export { documentClient } from "./DynamoDbClient";
+export { DynamoDbUserDao } from "./DynamoDbUserDao";
 export type {
   AuthTokenItem,
   FeedItem,

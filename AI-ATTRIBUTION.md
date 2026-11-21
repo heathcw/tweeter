@@ -65,3 +65,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Define provisioned DynamoDB tables for users, authentication tokens, follows, stories, and precomputed feeds; add the inverse follows index and token TTL; define the encrypted public profile-image S3 bucket; inject resource names into every Lambda; and grant each Lambda table- and bucket-scoped access for only its feature set.
 - Review: Tables added to the yaml file in preparation for deployment to AWS. Looks good to me.
+
+## 2026-11-20: tweeter-web-starter/tweeter-server/src/dao/dynamodb/DynamoDbUserDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/dynamodb/index.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Implement the DynamoDB user DAO with conditional alias creation, strongly consistent single-user reads, ordered batch reads, duplicate-key handling, 100-key chunking, and exponential retries for unprocessed batch keys.
+- Review: The UserDAO looks and works great. Get and create users.
