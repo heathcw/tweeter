@@ -8,6 +8,7 @@ export type {
   FeedDao,
   FeedRecord,
   FollowDao,
+  FollowDaoFactory,
   ImageDao,
   ImageUpload,
   StoryDao,

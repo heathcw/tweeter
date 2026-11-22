@@ -18,8 +18,13 @@ export interface UserDaoFactory {
   createImageDao(): ImageDao;
 }
 
-export interface DaoFactory extends UserDaoFactory {
+export interface FollowDaoFactory {
   createFollowDao(): FollowDao;
+  createUserDao(): UserDao;
+  createAuthTokenDao(): AuthTokenDao;
+}
+
+export interface DaoFactory extends UserDaoFactory, FollowDaoFactory {
   createStoryDao(): StoryDao;
   createFeedDao(): FeedDao;
 }

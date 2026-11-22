@@ -2,6 +2,7 @@
 
 export { documentClient } from "./DynamoDbClient";
 export { DynamoDbAuthTokenDao } from "./DynamoDbAuthTokenDao";
+export { DynamoDbFollowDao } from "./DynamoDbFollowDao";
 export { DynamoDbUserDao } from "./DynamoDbUserDao";
 export type {
   AuthTokenItem,

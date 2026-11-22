@@ -101,3 +101,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Add an AWS implementation of the user DAO factory and a shared Lambda composition root. Refactor UserService to receive its abstract factory and shared authorization/password dependencies, remove repeated Lambda wiring, replace get-user FakeData with authenticated DynamoDB lookup, normalize aliases, and refresh token activity.
 - Review: Lots of duplication removal which is great. looks good overall
+
+## 2026-11-21: tweeter-web-starter/tweeter-server/src/dao/DaoFactory.ts, tweeter-web-starter/tweeter-server/src/dao/aws/AwsDaoFactory.ts, tweeter-web-starter/tweeter-server/src/dao/dynamodb/DynamoDbFollowDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/dynamodb/index.ts, tweeter-web-starter/tweeter-server/src/dao/index.ts, tweeter-web-starter/tweeter-server/src/index.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Implement the DynamoDB follow DAO with atomic conditional transactions that create or delete relationships while updating both users' counters, strongly consistent relationship checks, alphabetical follower/followee pagination through the inverse index and primary key, accurate lookahead-based pagination flags, complete follower retrieval for feed fan-out, and abstract-factory wiring.
+- Review: The followDAO now allows for CRUD of the follow table on AWS. get followers, create follow, delete follow. all look good
