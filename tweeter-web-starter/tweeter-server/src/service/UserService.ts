@@ -9,10 +9,11 @@ import { UserDao } from "../dao/UserDao";
 import { AuthorizationService } from "./AuthorizationService";
 import { ClientError } from "./ClientError";
 import { PasswordHasher } from "./PasswordHasher";
+import { UnauthorizedError } from "./UnauthorizedError";
 
 export interface UserServiceDependencies {
   userDao: UserDao;
-  imageDao: ImageDao;
+  imageDao?: ImageDao;
   authorizationService: AuthorizationService;
   passwordHasher: PasswordHasher;
 }
@@ -44,10 +45,11 @@ export class UserService {
     }
 
     const passwordHash = await dependencies.passwordHasher.hash(password);
+    const imageDao = this.requireImageDao(dependencies);
     let imageUpload;
 
     try {
-      imageUpload = await dependencies.imageDao.putImage(
+      imageUpload = await imageDao.putImage(
         `${normalizedAlias.slice(1)}-${randomUUID()}`,
         userImage,
         imageFileExtension,
@@ -83,7 +85,7 @@ export class UserService {
         await dependencies.authorizationService.createSession(normalizedAlias);
       return [user, authToken];
     } catch (error) {
-      const cleanup = [dependencies.imageDao.deleteImage(imageUpload.key)];
+      const cleanup = [imageDao.deleteImage(imageUpload.key)];
       if (userCreated) {
         cleanup.push(dependencies.userDao.deleteUser(normalizedAlias));
       }
@@ -99,18 +101,32 @@ export class UserService {
     this.requireText(alias, "alias");
     this.requireText(password, "password");
 
-    const user = FakeData.instance.firstUser;
-    if (user === null) {
-      throw new Error("Invalid alias or password");
+    const dependencies = this.requireDependencies();
+    const normalizedAlias = this.normalizeAlias(alias);
+    const userRecord = await dependencies.userDao.getUser(normalizedAlias);
+    if (
+      !userRecord ||
+      !(await dependencies.passwordHasher.compare(
+        password,
+        userRecord.passwordHash,
+      ))
+    ) {
+      throw new UnauthorizedError("Invalid alias or password");
     }
 
-    return [user, FakeData.instance.authToken];
+    const user = new User(
+      userRecord.firstName,
+      userRecord.lastName,
+      userRecord.alias,
+      userRecord.imageUrl,
+    );
+    const authToken =
+      await dependencies.authorizationService.createSession(user.alias);
+    return [user, authToken];
   }
 
   public async logout(token: string): Promise<void> {
-    // Milestone 4 will invalidate this token. Milestone 3 only requires it
-    // to be present.
-    this.requireText(token, "token");
+    await this.requireDependencies().authorizationService.endSession(token);
   }
 
   public async getUser(token: string, alias: string): Promise<User | null> {
@@ -141,5 +157,14 @@ export class UserService {
       throw new Error("UserService persistence dependencies are missing");
     }
     return this.dependencies;
+  }
+
+  private requireImageDao(
+    dependencies: UserServiceDependencies,
+  ): ImageDao {
+    if (!dependencies.imageDao) {
+      throw new Error("UserService image dependency is missing");
+    }
+    return dependencies.imageDao;
   }
 }

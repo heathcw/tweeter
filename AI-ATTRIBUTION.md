@@ -89,3 +89,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Replace dummy registration with injected DynamoDB, S3, bcrypt, and authorization dependencies. Normalize and validate aliases, reject duplicates, hash passwords, upload unique profile images, initialize counts, persist users, create sessions, and roll back the user and image if a later registration step fails.
 - Review: Registration works now with password hashing, creating an authtoken, and even uploading images
+
+## 2026-11-21: tweeter-web-starter/tweeter-server/src/service/UserService.ts, tweeter-web-starter/tweeter-server/src/lambda/LoginLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/LogoutLambda.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Replace dummy login and logout with injected persistence. Normalize login aliases, load the stored user, compare bcrypt hashes, return the same unauthorized response for an unknown alias or wrong password, create a fresh session on login, and authenticate then delete the exact session on logout.
+- Review: Now the login and logout work like the registration. It uses bcrypt, receieves and authtoken, starts and ends a session
