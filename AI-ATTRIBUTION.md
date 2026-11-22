@@ -83,3 +83,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Implement conditional authentication-token persistence, exact expiration checks, DynamoDB TTL cleanup values, ten-minute sliding inactivity windows, session creation and logout, bcrypt password hashing and comparison, and CORS-bearing HTTP 401 responses for unauthorized requests.
 - Review: Sessions implemented. Uses Bcrypt for passwords and sessions last 10 minutes. Overall, security looks good.
+
+## 2026-11-21: tweeter-web-starter/tweeter-server/src/dao/UserDao.ts, tweeter-web-starter/tweeter-server/src/dao/dynamodb/DynamoDbUserDao.ts, tweeter-web-starter/tweeter-server/src/service/UserService.ts, tweeter-web-starter/tweeter-server/src/lambda/RegisterLambda.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Replace dummy registration with injected DynamoDB, S3, bcrypt, and authorization dependencies. Normalize and validate aliases, reject duplicates, hash passwords, upload unique profile images, initialize counts, persist users, create sessions, and roll back the user and image if a later registration step fails.
+- Review: Registration works now with password hashing, creating an authtoken, and even uploading images

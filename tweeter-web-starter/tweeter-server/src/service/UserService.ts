@@ -1,9 +1,27 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
+import { randomUUID } from "crypto";
 import { AuthToken, FakeData, User } from "tweeter-shared";
+import { ImageDao } from "../dao/ImageDao";
+import { InvalidImageError } from "../dao/InvalidImageError";
+import { UserRecord } from "../dao/PersistenceTypes";
+import { UserDao } from "../dao/UserDao";
+import { AuthorizationService } from "./AuthorizationService";
 import { ClientError } from "./ClientError";
+import { PasswordHasher } from "./PasswordHasher";
+
+export interface UserServiceDependencies {
+  userDao: UserDao;
+  imageDao: ImageDao;
+  authorizationService: AuthorizationService;
+  passwordHasher: PasswordHasher;
+}
 
 export class UserService {
+  public constructor(
+    private readonly dependencies?: UserServiceDependencies,
+  ) {}
+
   public async register(
     firstName: string,
     lastName: string,
@@ -17,18 +35,61 @@ export class UserService {
     this.requireText(alias, "alias");
     this.requireText(password, "password");
     this.requireText(imageFileExtension, "image file extension");
-    if (typeof userImage !== "string") {
-      throw new ClientError("Missing user image");
+    this.requireText(userImage, "user image");
+
+    const dependencies = this.requireDependencies();
+    const normalizedAlias = this.normalizeAlias(alias);
+    if (await dependencies.userDao.getUser(normalizedAlias)) {
+      throw new ClientError("Alias is already registered");
     }
 
-    // Milestone 3 does not store the user. The image and password are accepted
-    // so the request matches the shape milestone 4 will save.
-    const user = FakeData.instance.firstUser;
-    if (user === null) {
-      throw new Error("Invalid registration");
+    const passwordHash = await dependencies.passwordHasher.hash(password);
+    let imageUpload;
+
+    try {
+      imageUpload = await dependencies.imageDao.putImage(
+        `${normalizedAlias.slice(1)}-${randomUUID()}`,
+        userImage,
+        imageFileExtension,
+      );
+    } catch (error) {
+      if (error instanceof InvalidImageError) {
+        throw new ClientError(error.message);
+      }
+      throw error;
     }
 
-    return [user, FakeData.instance.authToken];
+    const user = new User(
+      firstName.trim(),
+      lastName.trim(),
+      normalizedAlias,
+      imageUpload.url,
+    );
+    const userRecord: UserRecord = {
+      ...user.toDto(),
+      passwordHash,
+      followerCount: 0,
+      followeeCount: 0,
+    };
+
+    let userCreated = false;
+    try {
+      userCreated = await dependencies.userDao.createUser(userRecord);
+      if (!userCreated) {
+        throw new ClientError("Alias is already registered");
+      }
+
+      const authToken =
+        await dependencies.authorizationService.createSession(normalizedAlias);
+      return [user, authToken];
+    } catch (error) {
+      const cleanup = [dependencies.imageDao.deleteImage(imageUpload.key)];
+      if (userCreated) {
+        cleanup.push(dependencies.userDao.deleteUser(normalizedAlias));
+      }
+      await Promise.allSettled(cleanup);
+      throw error;
+    }
   }
 
   public async login(
@@ -62,5 +123,23 @@ export class UserService {
     if (typeof value !== "string" || value.trim() === "") {
       throw new ClientError(`Missing ${label}`);
     }
+  }
+
+  private normalizeAlias(alias: string): string {
+    const trimmed = alias.trim();
+    const normalized = trimmed.startsWith("@") ? trimmed : `@${trimmed}`;
+    if (!/^@[A-Za-z0-9]+$/.test(normalized)) {
+      throw new ClientError(
+        "Alias must contain only letters and numbers",
+      );
+    }
+    return normalized;
+  }
+
+  private requireDependencies(): UserServiceDependencies {
+    if (!this.dependencies) {
+      throw new Error("UserService persistence dependencies are missing");
+    }
+    return this.dependencies;
   }
 }

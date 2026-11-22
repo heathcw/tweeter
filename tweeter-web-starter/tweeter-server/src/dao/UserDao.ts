@@ -12,6 +12,8 @@ export interface UserDao {
 
   getUser(alias: string): Promise<UserRecord | null>;
 
+  deleteUser(alias: string): Promise<void>;
+
   /**
    * Returns existing records in the same order as the requested aliases.
    */

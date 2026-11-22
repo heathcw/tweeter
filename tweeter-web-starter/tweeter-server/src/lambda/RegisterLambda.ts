@@ -2,10 +2,23 @@
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { AuthResponse, RegisterRequest } from "tweeter-shared";
+import {
+  DynamoDbAuthTokenDao,
+  DynamoDbUserDao,
+} from "../dao/dynamodb";
+import { S3ImageDao } from "../dao/s3";
+import { AuthorizationService } from "../service/AuthorizationService";
+import { PasswordHasher } from "../service/PasswordHasher";
 import { UserService } from "../service/UserService";
 import { failure, parseBody, success } from "./ApiGateway";
 
-const userService = new UserService();
+const authTokenDao = new DynamoDbAuthTokenDao();
+const userService = new UserService({
+  userDao: new DynamoDbUserDao(),
+  imageDao: new S3ImageDao(),
+  authorizationService: new AuthorizationService(authTokenDao),
+  passwordHasher: new PasswordHasher(),
+});
 
 export const handler = async (
   event: APIGatewayProxyEvent,

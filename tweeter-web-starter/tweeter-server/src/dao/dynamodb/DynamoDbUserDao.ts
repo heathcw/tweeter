@@ -2,6 +2,7 @@
 
 import {
   BatchGetCommand,
+  DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
@@ -56,6 +57,15 @@ export class DynamoDbUserDao implements UserDao {
     return response.Item
       ? fromUserItem(response.Item as UserItem)
       : null;
+  }
+
+  public async deleteUser(alias: string): Promise<void> {
+    await this.client.send(
+      new DeleteCommand({
+        TableName: tableNames.users,
+        Key: { alias },
+      }),
+    );
   }
 
   public async getUsers(aliases: string[]): Promise<UserRecord[]> {
