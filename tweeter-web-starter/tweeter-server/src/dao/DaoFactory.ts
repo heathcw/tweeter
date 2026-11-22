@@ -12,10 +12,13 @@ import { UserDao } from "./UserDao";
  * this interface and therefore do not know whether data is in DynamoDB, an
  * in-memory test store, or another database.
  */
-export interface DaoFactory {
+export interface UserDaoFactory {
   createUserDao(): UserDao;
   createAuthTokenDao(): AuthTokenDao;
   createImageDao(): ImageDao;
+}
+
+export interface DaoFactory extends UserDaoFactory {
   createFollowDao(): FollowDao;
   createStoryDao(): StoryDao;
   createFeedDao(): FeedDao;

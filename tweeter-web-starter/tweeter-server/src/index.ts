@@ -12,9 +12,11 @@ export type {
   ImageUpload,
   StoryDao,
   UserDao,
+  UserDaoFactory,
   UserRecord,
 } from "./dao";
 export { InvalidImageError } from "./dao";
+export { AwsDaoFactory } from "./dao/aws";
 export { AuthorizationService } from "./service/AuthorizationService";
 export { PasswordHasher } from "./service/PasswordHasher";
 export { UnauthorizedError } from "./service/UnauthorizedError";

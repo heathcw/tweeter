@@ -2,10 +2,8 @@
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { GetUserRequest, GetUserResponse } from "tweeter-shared";
-import { UserService } from "../service/UserService";
 import { failure, parseBody, success } from "./ApiGateway";
-
-const userService = new UserService();
+import { userService } from "./ServiceProvider";
 
 export const handler = async (
   event: APIGatewayProxyEvent,

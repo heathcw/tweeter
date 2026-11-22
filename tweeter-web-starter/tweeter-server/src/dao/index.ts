@@ -1,7 +1,7 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
 export type { AuthTokenDao } from "./AuthTokenDao";
-export type { DaoFactory } from "./DaoFactory";
+export type { DaoFactory, UserDaoFactory } from "./DaoFactory";
 export type { FeedDao } from "./FeedDao";
 export type { FollowDao } from "./FollowDao";
 export type { ImageDao } from "./ImageDao";

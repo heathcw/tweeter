@@ -1,26 +1,20 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
 import { randomUUID } from "crypto";
-import { AuthToken, FakeData, User } from "tweeter-shared";
-import { ImageDao } from "../dao/ImageDao";
+import { AuthToken, User } from "tweeter-shared";
+import { UserDaoFactory } from "../dao/DaoFactory";
 import { InvalidImageError } from "../dao/InvalidImageError";
 import { UserRecord } from "../dao/PersistenceTypes";
-import { UserDao } from "../dao/UserDao";
 import { AuthorizationService } from "./AuthorizationService";
 import { ClientError } from "./ClientError";
 import { PasswordHasher } from "./PasswordHasher";
 import { UnauthorizedError } from "./UnauthorizedError";
 
-export interface UserServiceDependencies {
-  userDao: UserDao;
-  imageDao?: ImageDao;
-  authorizationService: AuthorizationService;
-  passwordHasher: PasswordHasher;
-}
-
 export class UserService {
   public constructor(
-    private readonly dependencies?: UserServiceDependencies,
+    private readonly daoFactory: UserDaoFactory,
+    private readonly authorizationService: AuthorizationService,
+    private readonly passwordHasher: PasswordHasher,
   ) {}
 
   public async register(
@@ -38,14 +32,14 @@ export class UserService {
     this.requireText(imageFileExtension, "image file extension");
     this.requireText(userImage, "user image");
 
-    const dependencies = this.requireDependencies();
+    const userDao = this.daoFactory.createUserDao();
     const normalizedAlias = this.normalizeAlias(alias);
-    if (await dependencies.userDao.getUser(normalizedAlias)) {
+    if (await userDao.getUser(normalizedAlias)) {
       throw new ClientError("Alias is already registered");
     }
 
-    const passwordHash = await dependencies.passwordHasher.hash(password);
-    const imageDao = this.requireImageDao(dependencies);
+    const passwordHash = await this.passwordHasher.hash(password);
+    const imageDao = this.daoFactory.createImageDao();
     let imageUpload;
 
     try {
@@ -76,18 +70,18 @@ export class UserService {
 
     let userCreated = false;
     try {
-      userCreated = await dependencies.userDao.createUser(userRecord);
+      userCreated = await userDao.createUser(userRecord);
       if (!userCreated) {
         throw new ClientError("Alias is already registered");
       }
 
       const authToken =
-        await dependencies.authorizationService.createSession(normalizedAlias);
+        await this.authorizationService.createSession(normalizedAlias);
       return [user, authToken];
     } catch (error) {
       const cleanup = [imageDao.deleteImage(imageUpload.key)];
       if (userCreated) {
-        cleanup.push(dependencies.userDao.deleteUser(normalizedAlias));
+        cleanup.push(userDao.deleteUser(normalizedAlias));
       }
       await Promise.allSettled(cleanup);
       throw error;
@@ -101,12 +95,12 @@ export class UserService {
     this.requireText(alias, "alias");
     this.requireText(password, "password");
 
-    const dependencies = this.requireDependencies();
+    const userDao = this.daoFactory.createUserDao();
     const normalizedAlias = this.normalizeAlias(alias);
-    const userRecord = await dependencies.userDao.getUser(normalizedAlias);
+    const userRecord = await userDao.getUser(normalizedAlias);
     if (
       !userRecord ||
-      !(await dependencies.passwordHasher.compare(
+      !(await this.passwordHasher.compare(
         password,
         userRecord.passwordHash,
       ))
@@ -120,19 +114,29 @@ export class UserService {
       userRecord.alias,
       userRecord.imageUrl,
     );
-    const authToken =
-      await dependencies.authorizationService.createSession(user.alias);
+    const authToken = await this.authorizationService.createSession(user.alias);
     return [user, authToken];
   }
 
   public async logout(token: string): Promise<void> {
-    await this.requireDependencies().authorizationService.endSession(token);
+    await this.authorizationService.endSession(token);
   }
 
   public async getUser(token: string, alias: string): Promise<User | null> {
-    this.requireText(token, "token");
     this.requireText(alias, "alias");
-    return FakeData.instance.findUserByAlias(alias);
+    await this.authorizationService.authorize(token);
+
+    const userRecord = await this.daoFactory
+      .createUserDao()
+      .getUser(this.normalizeAlias(alias));
+    return userRecord
+      ? new User(
+          userRecord.firstName,
+          userRecord.lastName,
+          userRecord.alias,
+          userRecord.imageUrl,
+        )
+      : null;
   }
 
   private requireText(value: string, label: string): void {
@@ -152,19 +156,4 @@ export class UserService {
     return normalized;
   }
 
-  private requireDependencies(): UserServiceDependencies {
-    if (!this.dependencies) {
-      throw new Error("UserService persistence dependencies are missing");
-    }
-    return this.dependencies;
-  }
-
-  private requireImageDao(
-    dependencies: UserServiceDependencies,
-  ): ImageDao {
-    if (!dependencies.imageDao) {
-      throw new Error("UserService image dependency is missing");
-    }
-    return dependencies.imageDao;
-  }
 }

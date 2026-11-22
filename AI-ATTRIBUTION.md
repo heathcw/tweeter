@@ -95,3 +95,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Replace dummy login and logout with injected persistence. Normalize login aliases, load the stored user, compare bcrypt hashes, return the same unauthorized response for an unknown alias or wrong password, create a fresh session on login, and authenticate then delete the exact session on logout.
 - Review: Now the login and logout work like the registration. It uses bcrypt, receieves and authtoken, starts and ends a session
+
+## 2026-11-21: tweeter-web-starter/tweeter-server/src/dao/DaoFactory.ts, tweeter-web-starter/tweeter-server/src/dao/index.ts, tweeter-web-starter/tweeter-server/src/dao/aws/AwsDaoFactory.ts (new file), tweeter-web-starter/tweeter-server/src/dao/aws/index.ts (new file), tweeter-web-starter/tweeter-server/src/index.ts, tweeter-web-starter/tweeter-server/src/lambda/ServiceProvider.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/RegisterLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/LoginLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/LogoutLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/GetUserLambda.ts, tweeter-web-starter/tweeter-server/src/service/UserService.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Add an AWS implementation of the user DAO factory and a shared Lambda composition root. Refactor UserService to receive its abstract factory and shared authorization/password dependencies, remove repeated Lambda wiring, replace get-user FakeData with authenticated DynamoDB lookup, normalize aliases, and refresh token activity.
+- Review: Lots of duplication removal which is great. looks good overall
