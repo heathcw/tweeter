@@ -14,3 +14,4 @@ export type {
   UserDao,
   UserRecord,
 } from "./dao";
+export { InvalidImageError } from "./dao";

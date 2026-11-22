@@ -71,3 +71,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Implement the DynamoDB user DAO with conditional alias creation, strongly consistent single-user reads, ordered batch reads, duplicate-key handling, 100-key chunking, and exponential retries for unprocessed batch keys.
 - Review: The UserDAO looks and works great. Get and create users.
+
+## 2026-11-21: tweeter-web-starter/tweeter-server/src/dao/InvalidImageError.ts (new file), tweeter-web-starter/tweeter-server/src/dao/index.ts, tweeter-web-starter/tweeter-server/src/dao/s3/S3Client.ts (new file), tweeter-web-starter/tweeter-server/src/dao/s3/S3ImageDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/s3/index.ts (new file), tweeter-web-starter/tweeter-server/src/index.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Implement the S3 profile-image DAO with reusable client configuration, strict base64 validation, supported extension and file-signature checks, safe object keys, correct image content types, public URLs, and deletion for registration cleanup.
+- Review: The image interaction for s3 looks good to me. This code handles s3 security.

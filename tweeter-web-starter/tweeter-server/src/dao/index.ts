@@ -5,6 +5,7 @@ export type { DaoFactory } from "./DaoFactory";
 export type { FeedDao } from "./FeedDao";
 export type { FollowDao } from "./FollowDao";
 export type { ImageDao } from "./ImageDao";
+export { InvalidImageError } from "./InvalidImageError";
 export type {
   AuthTokenRecord,
   DaoPage,
