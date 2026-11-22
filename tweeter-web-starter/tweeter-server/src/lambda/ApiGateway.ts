@@ -3,8 +3,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { TweeterResponse } from "tweeter-shared";
 import { ClientError } from "../service/ClientError";
+import { UnauthorizedError } from "../service/UnauthorizedError";
 
-// Returned on 200, 400, and 500. API Gateway does not add this header
+// Returned on 200, 400, 401, and 500. API Gateway does not add this header
 // to a Lambda proxy response.
 const headers = {
   "Access-Control-Allow-Origin": "*",
@@ -36,8 +37,12 @@ export function success<T extends TweeterResponse>(
 
 export function failure(error: unknown): APIGatewayProxyResult {
   const message = error instanceof Error ? error.message : "Unknown error";
-  const statusCode =
-    error instanceof ClientError || error instanceof SyntaxError ? 400 : 500;
+  let statusCode = 500;
+  if (error instanceof UnauthorizedError) {
+    statusCode = 401;
+  } else if (error instanceof ClientError || error instanceof SyntaxError) {
+    statusCode = 400;
+  }
 
   return {
     statusCode,

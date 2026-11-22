@@ -3,7 +3,11 @@
 import { AuthTokenRecord } from "./PersistenceTypes";
 
 export interface AuthTokenDao {
-  createToken(authToken: AuthTokenRecord): Promise<void>;
+  /**
+   * @returns true when created; false in the unlikely event of a token
+   * collision.
+   */
+  createToken(authToken: AuthTokenRecord): Promise<boolean>;
 
   getToken(token: string): Promise<AuthTokenRecord | null>;
 

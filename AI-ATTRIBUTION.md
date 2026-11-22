@@ -77,3 +77,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Implement the S3 profile-image DAO with reusable client configuration, strict base64 validation, supported extension and file-signature checks, safe object keys, correct image content types, public URLs, and deletion for registration cleanup.
 - Review: The image interaction for s3 looks good to me. This code handles s3 security.
+
+## 2026-11-21: tweeter-web-starter/tweeter-server/src/dao/AuthTokenDao.ts, tweeter-web-starter/tweeter-server/src/dao/dynamodb/DynamoDbAuthTokenDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/dynamodb/index.ts, tweeter-web-starter/tweeter-server/src/service/AuthorizationService.ts (new file), tweeter-web-starter/tweeter-server/src/service/PasswordHasher.ts (new file), tweeter-web-starter/tweeter-server/src/service/UnauthorizedError.ts (new file), tweeter-web-starter/tweeter-server/src/lambda/ApiGateway.ts, tweeter-web-starter/tweeter-server/src/index.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Implement conditional authentication-token persistence, exact expiration checks, DynamoDB TTL cleanup values, ten-minute sliding inactivity windows, session creation and logout, bcrypt password hashing and comparison, and CORS-bearing HTTP 401 responses for unauthorized requests.
+- Review: Sessions implemented. Uses Bcrypt for passwords and sessions last 10 minutes. Overall, security looks good.

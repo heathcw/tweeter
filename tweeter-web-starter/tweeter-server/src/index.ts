@@ -15,3 +15,6 @@ export type {
   UserRecord,
 } from "./dao";
 export { InvalidImageError } from "./dao";
+export { AuthorizationService } from "./service/AuthorizationService";
+export { PasswordHasher } from "./service/PasswordHasher";
+export { UnauthorizedError } from "./service/UnauthorizedError";
