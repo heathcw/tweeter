@@ -149,3 +149,9 @@
 - Tool: Codex (GPT-6 Luna)
 - Task: Confirm all token-bearing service operations authenticate; standardize Lambda proxy errors as CORS-enabled 400, 401, or sanitized 500 responses; validate that request bodies are JSON objects; and document the fourteen API routes, request/response fields, authorization, error statuses, and CORS behavior.
 - Review: Local handling of API responses and documentation. This all looks good to me.
+
+## 2026-11-23: tweeter-web-starter/tweeter-server/test/services.test.ts (new file), tweeter-web-starter/tweeter-server/tsconfig.test.json (new file), tweeter-web-starter/tweeter-server/package.json, tweeter-web-starter/tweeter-server/.gitignore, AI-ATTRIBUTION.md
+
+- Tool: Codex (GPT-6 Luna)
+- Task: Configure server unit tests with ts-mockito DAO mocks and spies, cover password hashing and login, session sliding expiration and logout, service follow constraints, DynamoDB transactional follow writes, alphabetical pagination, story/feed cursor handling, fan-out to current followers, and preserving existing feed entries after unfollow.
+- Review: Initially, this commit was quite poor and did not use ts-mockito or jest and instead duplicated a lot of code. I worked with AI to use mocks and spies instead to avoud code duplication and this commit is better now.

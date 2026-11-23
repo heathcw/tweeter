@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "build": "tsc",
+    "build:test": "tsc -p tsconfig.test.json",
+    "pretest": "npm --prefix ../tweeter-shared run compile",
+    "test": "npm run build:test && node --test dist-test/test/services.test.js",
     "bundle": "npm run bundle:register && npm run bundle:login && npm run bundle:logout && npm run bundle:get-user && npm run bundle:post-status && npm run bundle:story && npm run bundle:feed && npm run bundle:follow && npm run bundle:unfollow && npm run bundle:is-follower && npm run bundle:follower-count && npm run bundle:followee-count && npm run bundle:follower-list && npm run bundle:followee-list",
     "bundle:register": "esbuild src/lambda/RegisterLambda.ts --bundle --platform=node --target=node20 --outfile=build/RegisterFunction/index.js --sourcemap",
     "bundle:login": "esbuild src/lambda/LoginLambda.ts --bundle --platform=node --target=node20 --outfile=build/LoginFunction/index.js --sourcemap",
@@ -19,7 +22,7 @@
     "bundle:followee-count": "esbuild src/lambda/FolloweeCountLambda.ts --bundle --platform=node --target=node20 --outfile=build/FolloweeCountFunction/index.js --sourcemap",
     "bundle:follower-list": "esbuild src/lambda/FollowerListLambda.ts --bundle --platform=node --target=node20 --outfile=build/FollowerListFunction/index.js --sourcemap",
     "bundle:followee-list": "esbuild src/lambda/FolloweeListLambda.ts --bundle --platform=node --target=node20 --outfile=build/FolloweeListFunction/index.js --sourcemap",
-    "clean": "rimraf dist build"
+    "clean": "rimraf dist dist-test build"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1175.0",
@@ -34,6 +37,7 @@
     "@types/node": "^20.11.24",
     "esbuild": "^0.25.0",
     "rimraf": "^5.0.5",
+    "@typestrong/ts-mockito": "^2.7.12",
     "typescript": "^5.0.2"
   }
 }
