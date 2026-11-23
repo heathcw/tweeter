@@ -125,3 +125,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Implement the DynamoDB story DAO with complete status and author snapshots, conditional duplicate-key protection, strongly consistent newest-first queries, timestamp cursors, one-item lookahead for accurate has-more values, page and cursor validation, and abstract-factory wiring.
 - Review: The put status and get story functions look good.
+
+## 2026-11-22: tweeter-web-starter/tweeter-server/src/service/StatusService.ts, tweeter-web-starter/tweeter-server/src/lambda/ServiceProvider.ts, tweeter-web-starter/tweeter-server/src/lambda/PostStatusLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/StoryLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/FeedLambda.ts, tweeter-web-starter/tweeter-server/template.yaml, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Replace dummy post-status and story behavior with authenticated persistence. Derive the author from the token and persisted user rather than trusting request profile data, validate post text, 280-character length, timestamps, aliases, page sizes, and cursors, reject duplicate timestamp keys, return newest-first story pages, share the injected StatusService across Lambdas, and grant least-privilege Users-table reads.
+- Review: Implemented post status in the status service. Looks good to me.

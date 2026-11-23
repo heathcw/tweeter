@@ -327,6 +327,8 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
         - DynamoDBCrudPolicy:
             TableName: !Ref StoriesTable
         - DynamoDBReadPolicy:
@@ -361,6 +363,8 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref AuthTokensTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
         - DynamoDBReadPolicy:
             TableName: !Ref StoriesTable
       Events:

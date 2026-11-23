@@ -3,10 +3,8 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { PostStatusRequest, Status, TweeterResponse } from "tweeter-shared";
 import { ClientError } from "../service/ClientError";
-import { StatusService } from "../service/StatusService";
 import { failure, parseBody, success } from "./ApiGateway";
-
-const statusService = new StatusService();
+import { statusService } from "./ServiceProvider";
 
 export const handler = async (
   event: APIGatewayProxyEvent,

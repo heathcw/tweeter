@@ -7,11 +7,9 @@ import {
   Status,
   StatusDto,
 } from "tweeter-shared";
-import { StatusService } from "../service/StatusService";
 import { failure, parseBody, success } from "./ApiGateway";
 import { ClientError } from "../service/ClientError";
-
-const statusService = new StatusService();
+import { statusService } from "./ServiceProvider";
 
 export const handler = async (
   event: APIGatewayProxyEvent,

@@ -4,6 +4,7 @@ import { AwsDaoFactory } from "../dao/aws";
 import { AuthorizationService } from "../service/AuthorizationService";
 import { FollowService } from "../service/FollowService";
 import { PasswordHasher } from "../service/PasswordHasher";
+import { StatusService } from "../service/StatusService";
 import { UserService } from "../service/UserService";
 
 /**
@@ -20,6 +21,10 @@ export const userService = new UserService(
   new PasswordHasher(),
 );
 export const followService = new FollowService(
+  daoFactory,
+  authorizationService,
+);
+export const statusService = new StatusService(
   daoFactory,
   authorizationService,
 );
