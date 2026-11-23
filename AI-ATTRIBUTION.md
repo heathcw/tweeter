@@ -131,3 +131,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Replace dummy post-status and story behavior with authenticated persistence. Derive the author from the token and persisted user rather than trusting request profile data, validate post text, 280-character length, timestamps, aliases, page sizes, and cursors, reject duplicate timestamp keys, return newest-first story pages, share the injected StatusService across Lambdas, and grant least-privilege Users-table reads.
 - Review: Implemented post status in the status service. Looks good to me.
+
+## 2026-11-22: tweeter-web-starter/tweeter-server/src/dao/FeedDao.ts, tweeter-web-starter/tweeter-server/src/dao/DaoFactory.ts, tweeter-web-starter/tweeter-server/src/dao/aws/AwsDaoFactory.ts, tweeter-web-starter/tweeter-server/src/dao/dynamodb/DynamoDbFeedDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/dynamodb/index.ts, tweeter-web-starter/tweeter-server/src/dao/index.ts, tweeter-web-starter/tweeter-server/src/index.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Implement the DynamoDB precomputed-feed DAO with status and author snapshots, owner deduplication, 25-item batch-write chunking, exponential retries for unprocessed writes, deterministic timestamp-and-author sort keys, strongly consistent newest-first queries, exact status cursors, lookahead-based has-more values, validation, and abstract-factory wiring.
+- Review: Data access object for feed looks great. All good and approved.

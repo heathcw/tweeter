@@ -3,6 +3,7 @@
 export type { AuthTokenDao } from "./AuthTokenDao";
 export type {
   DaoFactory,
+  FeedDaoFactory,
   FollowDaoFactory,
   StoryDaoFactory,
   UserDaoFactory,

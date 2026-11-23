@@ -6,6 +6,7 @@ export type {
   DaoFactory,
   DaoPage,
   FeedDao,
+  FeedDaoFactory,
   FeedRecord,
   FollowDao,
   FollowDaoFactory,

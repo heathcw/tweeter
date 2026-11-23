@@ -2,14 +2,17 @@
 
 import { AuthTokenDao } from "../AuthTokenDao";
 import {
+  FeedDaoFactory,
   FollowDaoFactory,
   StoryDaoFactory,
   UserDaoFactory,
 } from "../DaoFactory";
+import { FeedDao } from "../FeedDao";
 import { FollowDao } from "../FollowDao";
 import { ImageDao } from "../ImageDao";
 import {
   DynamoDbAuthTokenDao,
+  DynamoDbFeedDao,
   DynamoDbFollowDao,
   DynamoDbStoryDao,
   DynamoDbUserDao,
@@ -19,17 +22,22 @@ import { StoryDao } from "../StoryDao";
 import { UserDao } from "../UserDao";
 
 /**
- * AWS implementation of the currently available abstract DAO families.
- * The feed DAO is added in its later Milestone 4 slice.
+ * AWS implementation of the abstract DAO factory. Concrete dependencies are
+ * cached so a warm Lambda execution environment reuses its AWS clients.
  */
 export class AwsDaoFactory
-  implements UserDaoFactory, FollowDaoFactory, StoryDaoFactory
+  implements
+    UserDaoFactory,
+    FollowDaoFactory,
+    StoryDaoFactory,
+    FeedDaoFactory
 {
   private userDao: UserDao | undefined;
   private authTokenDao: AuthTokenDao | undefined;
   private imageDao: ImageDao | undefined;
   private followDao: FollowDao | undefined;
   private storyDao: StoryDao | undefined;
+  private feedDao: FeedDao | undefined;
 
   public createUserDao(): UserDao {
     this.userDao ??= new DynamoDbUserDao();
@@ -54,5 +62,10 @@ export class AwsDaoFactory
   public createStoryDao(): StoryDao {
     this.storyDao ??= new DynamoDbStoryDao();
     return this.storyDao;
+  }
+
+  public createFeedDao(): FeedDao {
+    this.feedDao ??= new DynamoDbFeedDao();
+    return this.feedDao;
   }
 }
