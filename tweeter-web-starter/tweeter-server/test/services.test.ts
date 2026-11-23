@@ -32,6 +32,7 @@ import { PasswordHasher } from "../src/service/PasswordHasher";
 import { StatusService } from "../src/service/StatusService";
 import { UnauthorizedError } from "../src/service/UnauthorizedError";
 import { UserService } from "../src/service/UserService";
+import { failure } from "../src/lambda/ApiGateway";
 
 const PASSWORD = "correct horse battery staple";
 
@@ -314,6 +315,25 @@ describe("DynamoDbFollowDao", () => {
     assert.equal(
       duplicateCommands.some((command) => command instanceof TransactWriteCommand),
       false,
+    );
+  });
+});
+
+describe("Lambda proxy error responses", () => {
+  it("maps client, authorization, and internal errors with CORS headers", () => {
+    const badRequest = failure(new ClientError("Invalid request"));
+    const unauthorized = failure(new UnauthorizedError());
+    const internal = failure(new Error("sensitive backend detail"));
+
+    assert.equal(badRequest.statusCode, 400);
+    assert.equal(unauthorized.statusCode, 401);
+    assert.equal(internal.statusCode, 500);
+    assert.equal(badRequest.headers?.["Access-Control-Allow-Origin"], "*");
+    assert.equal(unauthorized.headers?.["Access-Control-Allow-Origin"], "*");
+    assert.equal(internal.headers?.["Access-Control-Allow-Origin"], "*");
+    assert.equal(
+      JSON.parse(internal.body).errorMessage,
+      "Internal server error",
     );
   });
 });

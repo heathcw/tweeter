@@ -161,3 +161,9 @@
 - Tool: Codex (GPT-6 Luna)
 - Task: Add an explicitly confirmed AWS demo seed and cleanup workflow that creates two randomly named accounts, uploads their profile images, relates them, publishes twelve statuses into stories and precomputed feeds, stores a local manifest, and refuses cleanup if the accounts or their story/feed data contain unrelated passoff changes.
 - Review: The app is prepared to stop using fake data. Login and register work now. Redeploying the APIs should get rid of the fake story and feed data. Looks good other than that.
+
+## 2026-11-23: tweeter-web-starter/tweeter-server/test/persistentApi.integration.test.ts (new file), tweeter-web-starter/tweeter-server/test/services.test.ts, tweeter-web-starter/tweeter-server/src/service/ClientError.ts, tweeter-web-starter/tweeter-server/src/lambda/ApiGateway.ts, tweeter-web-starter/tweeter-server/src/scripts/seedDemoData.ts, tweeter-web-starter/tweeter-server/package.json, tweeter-web-starter/tweeter-server/template.yaml, tweeter-web-starter/tweeter-server/DEMO-DATA.md, tweeter-web-starter/tweeter-server/PASSOFF.md (new file), tweeter-web-starter/tweeter-web/src/App.tsx, tweeter-web-starter/tweeter-web/test/model.network/ServerFacade.test.ts (deleted), tweeter-web-starter/tweeter-web/test/model.service/StatusService.test.ts (deleted), AI-ATTRIBUTION.md
+
+- Tool: Codex (GPT-6 Luna)
+- Task: Replace FakeData-coupled web integration tests with opt-in persistent API end-to-end coverage, document deployment/passoff verification, test Lambda proxy error CORS behavior, remove the last FakeData reference from server code, preserve future demo-seed credentials locally, log sanitized 500 failures to CloudWatch, grant the Feed Lambda least-privilege access to the Users table required for feed authorization, and give each client scroller route its own presenter instance to prevent list/service reuse across tabs.
+- Review: Deployed to AWS, remove fakedata, debugged between two demo users

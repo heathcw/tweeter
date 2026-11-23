@@ -1,7 +1,7 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
 import { randomBytes } from "crypto";
-import { access, mkdir, readFile, writeFile } from "fs/promises";
+import { access, mkdir, readFile, unlink, writeFile } from "fs/promises";
 import { resolve } from "path";
 import {
   DeleteCommand,
@@ -86,6 +86,11 @@ function manifestPath(id: string): string {
   return resolve(SEED_DIRECTORY, `${id}.json`);
 }
 
+function credentialsPath(id: string): string {
+  manifestPath(id);
+  return resolve(SEED_DIRECTORY, `${id}.credentials.json`);
+}
+
 async function saveManifest(manifest: DemoManifest): Promise<void> {
   await mkdir(SEED_DIRECTORY, { recursive: true });
   await writeFile(
@@ -98,6 +103,15 @@ async function saveManifest(manifest: DemoManifest): Promise<void> {
 async function manifestAlreadyExists(id: string): Promise<boolean> {
   try {
     await access(manifestPath(id));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function credentialsAlreadyExist(id: string): Promise<boolean> {
+  try {
+    await access(credentialsPath(id));
     return true;
   } catch {
     return false;
@@ -171,7 +185,8 @@ async function seedDemoData(): Promise<void> {
   while (
     (await factory.createUserDao().getUser(`@demo${id}author`)) ||
     (await factory.createUserDao().getUser(`@demo${id}follower`)) ||
-    (await manifestAlreadyExists(id))
+    (await manifestAlreadyExists(id)) ||
+    (await credentialsAlreadyExist(id))
   ) {
     id = randomBytes(6).toString("hex");
   }
@@ -208,6 +223,16 @@ async function seedDemoData(): Promise<void> {
     })),
   };
   await saveManifest(manifest);
+  await writeFile(
+    credentialsPath(id),
+    `${JSON.stringify({
+      runId: id,
+      authorAlias,
+      followerAlias,
+      password,
+    }, null, 2)}\n`,
+    { encoding: "utf8", flag: "wx", mode: 0o600 },
+  );
 
   const sessions: string[] = [];
   try {
@@ -276,6 +301,7 @@ async function seedDemoData(): Promise<void> {
   console.log(`Password for both accounts: ${password}`);
   console.log(`Statuses per story/feed: ${STATUS_COUNT}`);
   console.log(`Cleanup manifest: ${manifestPath(id)}`);
+  console.log(`Credentials file: ${credentialsPath(id)}`);
   console.log(`Cleanup command: npm run seed:demo -- --cleanup ${id} --confirm`);
 }
 
@@ -537,7 +563,9 @@ async function cleanupDemoData(id: string): Promise<void> {
   }
 
   console.log(`Removed demo data for run ${id}.`);
-  console.log(`The local manifest is at ${manifestPath(id)} and may now be deleted.`);
+  await unlink(manifestPath(id));
+  await unlink(credentialsPath(id)).catch(() => undefined);
+  console.log("Removed the local manifest and credentials file.");
 }
 
 async function main(): Promise<void> {

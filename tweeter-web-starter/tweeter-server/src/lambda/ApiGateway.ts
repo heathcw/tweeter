@@ -57,6 +57,10 @@ export function failure(error: unknown): APIGatewayProxyResult {
       error instanceof SyntaxError
         ? "Request body is not valid JSON"
         : error.message;
+  } else {
+    // Keep implementation details out of the API response while retaining
+    // enough context in CloudWatch to diagnose unexpected server failures.
+    console.error("Unhandled API request error", error);
   }
 
   return {

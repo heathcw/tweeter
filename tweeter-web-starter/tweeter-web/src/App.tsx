@@ -101,7 +101,7 @@ const UnauthenticatedRoutes = () => {
 const BuildStatusItemScroller = (featurePath: string, displayedUser: User, presenterFactory: (view: PageItemView<Status>) => any) => {
   return (
     <ItemScroller
-      key={`feed-${displayedUser!.alias}`}
+      key={`${featurePath}-${displayedUser!.alias}`}
       featurePath={featurePath}
       presenterFactory={presenterFactory}
       itemComponentFactory={(item: Status, featurePath: string) => (
@@ -114,7 +114,7 @@ const BuildStatusItemScroller = (featurePath: string, displayedUser: User, prese
 const BuildUserItemScroller = (featurePath: string, displayedUser: User, presenterFactory: (view: PageItemView<User>) => any) => {
  return (
   <ItemScroller
-              key={`followers-${displayedUser!.alias}`}
+              key={`${featurePath}-${displayedUser!.alias}`}
               featurePath={featurePath}
               presenterFactory={presenterFactory}
               itemComponentFactory={(item: User, featurePath: string) => (

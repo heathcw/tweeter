@@ -17,7 +17,7 @@ $env:PROFILE_IMAGES_BUCKET_NAME = "your-profile-images-bucket"
 npm run seed:demo -- --seed --confirm
 ```
 
-The command prints the run ID, both aliases, the shared password, and a cleanup command. It saves a manifest under `.demo-seeds/<run-id>.json`. The manifest contains only the generated aliases, image keys, and status timestamps/content; it does not store passwords or authentication tokens.
+The command prints the run ID, both aliases, the shared password, and a cleanup command. It saves a manifest under `.demo-seeds/<run-id>.json` and credentials under `.demo-seeds/<run-id>.credentials.json`. The credentials file is ignored by Git and contains the password in plain text; keep it private. The manifest itself contains only aliases, image keys, and status timestamps/content.
 
 ## Cleanup
 
@@ -28,6 +28,6 @@ $runId = "paste-the-run-id"
 npm run seed:demo -- --cleanup $runId --confirm
 ```
 
-Cleanup validates the accounts, their follow counts, and their story/feed contents before deleting anything. It stops if either demo account has extra follow relationships or unseeded story/feed items, or if demo statuses remain in another user's feed (including a former follower's feed). Remove those passoff changes manually and retry. It deletes only the seed run's story and feed keys, the demo accounts and their profile images, the relationship between the demo accounts, and auth tokens belonging to their unique aliases. Cleanup scans the AuthTokens table and the Feeds table because neither has an index for those checks; these scans may consume read capacity.
+Cleanup validates the accounts, their follow counts, and their story/feed contents before deleting anything. It stops if either demo account has extra follow relationships or unseeded story/feed items, or if demo statuses remain in another user's feed (including a former follower's feed). Remove those passoff changes manually and retry. It deletes only the seed run's story and feed keys, the demo accounts and their profile images, the relationship between the demo accounts, and auth tokens belonging to their unique aliases. Cleanup scans the AuthTokens table and the Feeds table because neither has an index for those checks; these scans may consume read capacity. After successful cleanup, the script removes the manifest and credentials file.
 
 The commands require `--seed` or `--cleanup <run-id>` plus `--confirm`; running the script without these arguments performs no AWS writes. They do not deploy or change the stack.
