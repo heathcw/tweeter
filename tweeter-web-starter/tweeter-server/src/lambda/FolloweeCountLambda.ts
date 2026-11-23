@@ -1,9 +1,7 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
-import { FollowService } from "../service/FollowService";
 import { countHandler } from "./followHandlers";
-
-const followService = new FollowService();
+import { followService } from "./ServiceProvider";
 
 export const handler = countHandler((token, user) =>
   followService.getFolloweeCount(token, user),

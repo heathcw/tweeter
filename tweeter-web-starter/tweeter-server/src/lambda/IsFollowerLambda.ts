@@ -2,11 +2,9 @@
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { IsFollowerRequest, IsFollowerResponse } from "tweeter-shared";
-import { FollowService } from "../service/FollowService";
 import { failure, parseBody, success } from "./ApiGateway";
 import { toUser } from "./followHandlers";
-
-const followService = new FollowService();
+import { followService } from "./ServiceProvider";
 
 export const handler = async (
   event: APIGatewayProxyEvent,
@@ -21,7 +19,7 @@ export const handler = async (
     const response: IsFollowerResponse = {
       success: true,
       message: null,
-      isFollower: isFollower,
+      isFollower,
     };
     return success(response);
   } catch (error) {

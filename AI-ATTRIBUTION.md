@@ -107,3 +107,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Implement the DynamoDB follow DAO with atomic conditional transactions that create or delete relationships while updating both users' counters, strongly consistent relationship checks, alphabetical follower/followee pagination through the inverse index and primary key, accurate lookahead-based pagination flags, complete follower retrieval for feed fan-out, and abstract-factory wiring.
 - Review: The followDAO now allows for CRUD of the follow table on AWS. get followers, create follow, delete follow. all look good
+
+## 2026-11-22: tweeter-web-starter/tweeter-server/src/service/FollowService.ts, tweeter-web-starter/tweeter-server/src/lambda/ServiceProvider.ts, tweeter-web-starter/tweeter-server/src/lambda/FollowLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/UnfollowLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/IsFollowerLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/FollowerCountLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/FolloweeCountLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/FollowerListLambda.ts, tweeter-web-starter/tweeter-server/src/lambda/FolloweeListLambda.ts, tweeter-web-starter/tweeter-server/template.yaml, tweeter-web-starter/tweeter-web/src/presenter/UserInfoPresenter.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Replace dummy follow, unfollow, and is-follower behavior with authenticated persistent operations. Derive the acting user only from the token, reject self-follow, duplicate follow, invalid unfollow, missing users, and bad aliases, return persisted target counts, share the injected FollowService across Lambdas, grant is-follower least-privilege user reads, and make the client switch back to the Follow state after a successful unfollow.
+- Review: Now follow and unfollow work

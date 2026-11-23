@@ -30,6 +30,7 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
         () => this.followService.unfollow(authToken!, displayedUser!),
         "unfollowing",
         displayedUser!,
+        false,
       );
     }, "unfollow user");
     this.finallyBlock(unfollowingUserToast);
@@ -49,6 +50,7 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
         () => this.followService.follow(authToken!, displayedUser!),
         "following",
         displayedUser!,
+        true,
       );
     }, "follow user");
     this.finallyBlock(followingUserToast);
@@ -95,18 +97,25 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
     this.view.setIsLoading(false);
   }
 
-  private async interactWithFollowService(asyncOperation: () => Promise<[followerCount: number, followeeCount: number]>, operationDescription: string, displayedUser: User): Promise<string> {
+  private async interactWithFollowService(
+    asyncOperation: () => Promise<
+      [followerCount: number, followeeCount: number]
+    >,
+    operationDescription: string,
+    displayedUser: User,
+    isFollowerAfterOperation: boolean,
+  ): Promise<string> {
     this.view.setIsLoading(true);
-      let UserToast = this.view.displayInfoMessage(
-        `${operationDescription} ${displayedUser!.name}...`,
-        0,
-      );
+    const userToast = this.view.displayInfoMessage(
+      `${operationDescription} ${displayedUser.name}...`,
+      0,
+    );
 
-      const [followerCount, followeeCount] = await asyncOperation();
+    const [followerCount, followeeCount] = await asyncOperation();
 
-      this.view.setIsFollower(true);
-      this.view.setFollowerCount(followerCount);
-      this.view.setFolloweeCount(followeeCount);
-      return UserToast;
+    this.view.setIsFollower(isFollowerAfterOperation);
+    this.view.setFollowerCount(followerCount);
+    this.view.setFolloweeCount(followeeCount);
+    return userToast;
   }
 }

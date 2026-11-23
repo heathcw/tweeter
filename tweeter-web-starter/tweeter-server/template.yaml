@@ -487,6 +487,8 @@ Resources:
             TableName: !Ref AuthTokensTable
         - DynamoDBReadPolicy:
             TableName: !Ref FollowsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref UsersTable
       Events:
         IsFollowerPost:
           Type: Api
