@@ -1,7 +1,7 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
-import { FakeData, Status, User } from "tweeter-shared";
-import { StoryDaoFactory } from "../dao/DaoFactory";
+import { Status, User } from "tweeter-shared";
+import { FeedDaoFactory } from "../dao/DaoFactory";
 import { AuthorizationService } from "./AuthorizationService";
 import { ClientError } from "./ClientError";
 
@@ -9,7 +9,7 @@ const MAX_STATUS_LENGTH = 280;
 
 export class StatusService {
   public constructor(
-    private readonly daoFactory: StoryDaoFactory,
+    private readonly daoFactory: FeedDaoFactory,
     private readonly authorizationService: AuthorizationService,
   ) {}
 
@@ -19,7 +19,24 @@ export class StatusService {
     pageSize: number,
     lastItem: Status | null,
   ): Promise<[Status[], boolean]> {
-    return this.getPage(token, userAlias, pageSize, lastItem);
+    const actorAlias = await this.authorizationService.authorize(token);
+    const normalizedAlias = this.normalizeAlias(userAlias);
+    if (actorAlias !== normalizedAlias) {
+      throw new ClientError("You can only view your own feed");
+    }
+    await this.requireExistingUser(normalizedAlias);
+    this.requirePageSize(pageSize);
+    if (lastItem !== null) {
+      this.requireValidStatus(lastItem);
+      this.requireAlias(lastItem.user.alias);
+    }
+
+    const page = await this.daoFactory.createFeedDao().getFeed(
+      normalizedAlias,
+      pageSize,
+      lastItem?.toDto() ?? null,
+    );
+    return [page.items.map((dto) => this.toStatus(dto)), page.hasMore];
   }
 
   public async loadMoreStoryItems(
@@ -90,21 +107,14 @@ export class StatusService {
       }
       throw error;
     }
-  }
 
-  private getPage(
-    token: string,
-    userAlias: string,
-    pageSize: number,
-    lastItem: Status | null,
-  ): [Status[], boolean] {
-    this.requireText(token, "token");
-    this.requireText(userAlias, "user alias");
-    if (typeof pageSize !== "number" || pageSize < 1) {
-      throw new ClientError("Missing page size");
-    }
-
-    return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
+    const followers = await this.daoFactory
+      .createFollowDao()
+      .getAllFollowerAliases(actorAlias);
+    await this.daoFactory.createFeedDao().addStatusToFeeds(
+      [actorAlias, ...followers],
+      persistedStatus.toDto(),
+    );
   }
 
   private async requireExistingUser(alias: string) {
@@ -131,6 +141,19 @@ export class StatusService {
     ) {
       throw new ClientError("Invalid status timestamp");
     }
+    this.requireAlias(status.user.alias);
+  }
+
+  private requireAlias(alias: string): string {
+    return this.normalizeAlias(alias);
+  }
+
+  private toStatus(dto: ReturnType<Status["toDto"]>): Status {
+    const status = Status.fromDto(dto);
+    if (status === null) {
+      throw new Error("Stored feed contains an invalid status");
+    }
+    return status;
   }
 
   private normalizeAlias(alias: string): string {

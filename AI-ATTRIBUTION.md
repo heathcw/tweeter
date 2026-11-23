@@ -137,3 +137,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Implement the DynamoDB precomputed-feed DAO with status and author snapshots, owner deduplication, 25-item batch-write chunking, exponential retries for unprocessed writes, deterministic timestamp-and-author sort keys, strongly consistent newest-first queries, exact status cursors, lookahead-based has-more values, validation, and abstract-factory wiring.
 - Review: Data access object for feed looks great. All good and approved.
+
+## 2026-11-23: tweeter-web-starter/tweeter-server/src/service/StatusService.ts, AI-ATTRIBUTION.md
+
+- Tool: Codex (GPT-6 Luna)
+- Task: Fan each successfully stored status out to the author's current followers and the author's own feed, replace FakeData feed retrieval with authenticated precomputed-feed pagination, preserve existing feed items on unfollow, and validate feed requests and stored statuses.
+- Review: Looks good to me.
