@@ -143,3 +143,9 @@
 - Tool: Codex (GPT-6 Luna)
 - Task: Fan each successfully stored status out to the author's current followers and the author's own feed, replace FakeData feed retrieval with authenticated precomputed-feed pagination, preserve existing feed items on unfollow, and validate feed requests and stored statuses.
 - Review: Looks good to me.
+
+## 2026-11-23: tweeter-web-starter/tweeter-server/src/lambda/ApiGateway.ts, tweeter-web-starter/tweeter-server/API.md, AI-ATTRIBUTION.md
+
+- Tool: Codex (GPT-6 Luna)
+- Task: Confirm all token-bearing service operations authenticate; standardize Lambda proxy errors as CORS-enabled 400, 401, or sanitized 500 responses; validate that request bodies are JSON objects; and document the fourteen API routes, request/response fields, authorization, error statuses, and CORS behavior.
+- Review: Local handling of API responses and documentation. This all looks good to me.

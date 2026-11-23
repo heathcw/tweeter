@@ -10,6 +10,7 @@ import { UnauthorizedError } from "../service/UnauthorizedError";
 const headers = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "POST,OPTIONS",
   "Content-Type": "application/json",
 };
 
@@ -22,7 +23,16 @@ export function parseBody<T>(event: APIGatewayProxyEvent): T {
     ? Buffer.from(event.body, "base64").toString("utf8")
     : event.body;
 
-  return JSON.parse(raw) as T;
+  const parsed: unknown = JSON.parse(raw);
+  if (
+    parsed === null ||
+    typeof parsed !== "object" ||
+    Array.isArray(parsed)
+  ) {
+    throw new ClientError("Request body must be a JSON object");
+  }
+
+  return parsed as T;
 }
 
 export function success<T extends TweeterResponse>(
@@ -36,12 +46,17 @@ export function success<T extends TweeterResponse>(
 }
 
 export function failure(error: unknown): APIGatewayProxyResult {
-  const message = error instanceof Error ? error.message : "Unknown error";
   let statusCode = 500;
+  let message = "Internal server error";
   if (error instanceof UnauthorizedError) {
     statusCode = 401;
+    message = error.message;
   } else if (error instanceof ClientError || error instanceof SyntaxError) {
     statusCode = 400;
+    message =
+      error instanceof SyntaxError
+        ? "Request body is not valid JSON"
+        : error.message;
   }
 
   return {
