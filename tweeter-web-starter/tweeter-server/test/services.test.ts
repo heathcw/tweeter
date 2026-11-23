@@ -24,7 +24,8 @@ import { ImageDao } from "../src/dao/ImageDao";
 import { StoryDao } from "../src/dao/StoryDao";
 import { UserDao } from "../src/dao/UserDao";
 import { UserRecord } from "../src/dao/PersistenceTypes";
-import { DynamoDbFollowDao } from "../src/dao/dynamodb/DynamoDbFollowDao";
+import { AwsDaoFactory } from "../src/dao/aws/AwsDaoFactory";
+import { DynamoDbUserFollowDao } from "../src/dao/dynamodb/DynamoDbUserFollowDao";
 import { AuthorizationService } from "../src/service/AuthorizationService";
 import { ClientError } from "../src/service/ClientError";
 import { FollowService } from "../src/service/FollowService";
@@ -229,7 +230,7 @@ describe("FollowService", () => {
   });
 });
 
-describe("DynamoDbFollowDao", () => {
+describe("DynamoDbUserFollowDao", () => {
   it("couples relationship changes and both counters in transactions", async () => {
     process.env.USERS_TABLE_NAME = "Users";
     process.env.FOLLOWS_TABLE_NAME = "Follows";
@@ -244,7 +245,7 @@ describe("DynamoDbFollowDao", () => {
       return Promise.resolve({} as never);
     });
 
-    const dao = new DynamoDbFollowDao(instance(clientMock));
+    const dao = new DynamoDbUserFollowDao(instance(clientMock));
     assert.equal(await dao.createFollow("@alice", "@bob"), true);
     const createTransaction = sentCommands.find(
       (command): command is TransactWriteCommand =>
@@ -274,7 +275,7 @@ describe("DynamoDbFollowDao", () => {
       return Promise.resolve({} as never);
     });
     assert.equal(
-      await new DynamoDbFollowDao(instance(deleteClientMock)).deleteFollow(
+      await new DynamoDbUserFollowDao(instance(deleteClientMock)).deleteFollow(
         "@alice",
         "@bob",
       ),
@@ -306,7 +307,7 @@ describe("DynamoDbFollowDao", () => {
       return Promise.resolve({ Item: { followerAlias: "@alice" } } as never);
     });
     assert.equal(
-      await new DynamoDbFollowDao(instance(duplicateClientMock)).createFollow(
+      await new DynamoDbUserFollowDao(instance(duplicateClientMock)).createFollow(
         "@alice",
         "@bob",
       ),
@@ -316,6 +317,13 @@ describe("DynamoDbFollowDao", () => {
       duplicateCommands.some((command) => command instanceof TransactWriteCommand),
       false,
     );
+  });
+});
+
+describe("AwsDaoFactory DAO ownership", () => {
+  it("shares one concrete DAO for Users and Follows persistence", () => {
+    const factory = new AwsDaoFactory();
+    assert.equal(factory.createUserDao(), factory.createFollowDao());
   });
 });
 

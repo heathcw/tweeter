@@ -1,15 +1,24 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
 import {
+  BatchGetCommand,
+  DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
+  PutCommand,
   QueryCommand,
   TransactWriteCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { FollowDao } from "../FollowDao";
-import { DaoPage } from "../PersistenceTypes";
+import { DaoPage, UserRecord } from "../PersistenceTypes";
+import { UserDao } from "../UserDao";
 import { documentClient } from "./DynamoDbClient";
-import { FollowItem } from "./DynamoDbItems";
+import {
+  FollowItem,
+  fromUserItem,
+  toUserItem,
+  UserItem,
+} from "./DynamoDbItems";
 import {
   followeeIndexName,
   tableNames,
@@ -17,11 +26,82 @@ import {
 
 const FOLLOWER_COUNT = "followerCount";
 const FOLLOWEE_COUNT = "followeeCount";
+const MAX_BATCH_GET_SIZE = 100;
+const MAX_UNPROCESSED_RETRIES = 5;
 
-export class DynamoDbFollowDao implements FollowDao {
+/**
+ * Owns both Users and Follows persistence. Follow transactions update user
+ * counters atomically, so the factory exposes this single DAO instance through
+ * the separate UserDao and FollowDao service interfaces.
+ */
+export class DynamoDbUserFollowDao implements FollowDao, UserDao {
   public constructor(
     private readonly client: DynamoDBDocumentClient = documentClient,
   ) {}
+
+  public async createUser(user: UserRecord): Promise<boolean> {
+    try {
+      await this.client.send(
+        new PutCommand({
+          TableName: tableNames.users,
+          Item: toUserItem(user),
+          ConditionExpression: "attribute_not_exists(#alias)",
+          ExpressionAttributeNames: { "#alias": "alias" },
+        }),
+      );
+      return true;
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.name === "ConditionalCheckFailedException"
+      ) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
+  public async getUser(alias: string): Promise<UserRecord | null> {
+    const response = await this.client.send(
+      new GetCommand({
+        TableName: tableNames.users,
+        Key: { alias },
+        ConsistentRead: true,
+      }),
+    );
+    return response.Item ? fromUserItem(response.Item as UserItem) : null;
+  }
+
+  public async deleteUser(alias: string): Promise<void> {
+    await this.client.send(
+      new DeleteCommand({
+        TableName: tableNames.users,
+        Key: { alias },
+      }),
+    );
+  }
+
+  public async getUsers(aliases: string[]): Promise<UserRecord[]> {
+    if (aliases.length === 0) return [];
+
+    const uniqueAliases = [...new Set(aliases)];
+    const recordsByAlias = new Map<string, UserRecord>();
+    for (
+      let start = 0;
+      start < uniqueAliases.length;
+      start += MAX_BATCH_GET_SIZE
+    ) {
+      const batch = uniqueAliases.slice(start, start + MAX_BATCH_GET_SIZE);
+      for (const record of await this.getUserBatch(batch)) {
+        recordsByAlias.set(record.alias, record);
+      }
+    }
+
+    return aliases.flatMap((alias) => {
+      const record = recordsByAlias.get(alias);
+      return record ? [record] : [];
+    });
+  }
 
   public async createFollow(
     followerAlias: string,
@@ -278,6 +358,45 @@ export class DynamoDbFollowDao implements FollowDao {
         },
       },
     };
+  }
+
+  private async getUserBatch(aliases: string[]): Promise<UserRecord[]> {
+    const tableName = tableNames.users;
+    let pendingKeys = aliases.map((alias) => ({ alias }));
+    const records: UserRecord[] = [];
+
+    for (
+      let attempt = 0;
+      pendingKeys.length > 0 && attempt < MAX_UNPROCESSED_RETRIES;
+      attempt++
+    ) {
+      const response = await this.client.send(
+        new BatchGetCommand({
+          RequestItems: {
+            [tableName]: { Keys: pendingKeys, ConsistentRead: true },
+          },
+        }),
+      );
+      const items = (response.Responses?.[tableName] ?? []) as UserItem[];
+      records.push(...items.map(fromUserItem));
+      pendingKeys =
+        (response.UnprocessedKeys?.[tableName]?.Keys as
+          | Array<{ alias: string }>
+          | undefined) ?? [];
+      if (pendingKeys.length > 0) await this.retryDelay(attempt);
+    }
+
+    if (pendingKeys.length > 0) {
+      throw new Error(
+        `DynamoDB did not process ${pendingKeys.length} user keys after retries`,
+      );
+    }
+    return records;
+  }
+
+  private async retryDelay(attempt: number): Promise<void> {
+    const delayMilliseconds = 25 * 2 ** attempt;
+    await new Promise((resolve) => setTimeout(resolve, delayMilliseconds));
   }
 
   private validatePageSize(pageSize: number): void {

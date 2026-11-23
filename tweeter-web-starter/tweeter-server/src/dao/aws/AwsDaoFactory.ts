@@ -13,9 +13,8 @@ import { ImageDao } from "../ImageDao";
 import {
   DynamoDbAuthTokenDao,
   DynamoDbFeedDao,
-  DynamoDbFollowDao,
   DynamoDbStoryDao,
-  DynamoDbUserDao,
+  DynamoDbUserFollowDao,
 } from "../dynamodb";
 import { S3ImageDao } from "../s3";
 import { StoryDao } from "../StoryDao";
@@ -32,16 +31,14 @@ export class AwsDaoFactory
     StoryDaoFactory,
     FeedDaoFactory
 {
-  private userDao: UserDao | undefined;
   private authTokenDao: AuthTokenDao | undefined;
   private imageDao: ImageDao | undefined;
-  private followDao: FollowDao | undefined;
+  private userFollowDao: DynamoDbUserFollowDao | undefined;
   private storyDao: StoryDao | undefined;
   private feedDao: FeedDao | undefined;
 
   public createUserDao(): UserDao {
-    this.userDao ??= new DynamoDbUserDao();
-    return this.userDao;
+    return this.createUserFollowDao();
   }
 
   public createAuthTokenDao(): AuthTokenDao {
@@ -55,8 +52,7 @@ export class AwsDaoFactory
   }
 
   public createFollowDao(): FollowDao {
-    this.followDao ??= new DynamoDbFollowDao();
-    return this.followDao;
+    return this.createUserFollowDao();
   }
 
   public createStoryDao(): StoryDao {
@@ -67,5 +63,10 @@ export class AwsDaoFactory
   public createFeedDao(): FeedDao {
     this.feedDao ??= new DynamoDbFeedDao();
     return this.feedDao;
+  }
+
+  private createUserFollowDao(): DynamoDbUserFollowDao {
+    this.userFollowDao ??= new DynamoDbUserFollowDao();
+    return this.userFollowDao;
   }
 }
