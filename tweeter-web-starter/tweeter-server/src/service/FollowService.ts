@@ -1,6 +1,6 @@
 // AI-assisted: see AI-ATTRIBUTION.md
 
-import { FakeData, User } from "tweeter-shared";
+import { User } from "tweeter-shared";
 import { FollowDaoFactory } from "../dao/DaoFactory";
 import { UserRecord } from "../dao/PersistenceTypes";
 import { AuthorizationService } from "./AuthorizationService";
@@ -18,7 +18,17 @@ export class FollowService {
     pageSize: number,
     lastItem: User | null,
   ): Promise<[User[], boolean]> {
-    return this.getPage(token, userAlias, pageSize, lastItem);
+    await this.authorizationService.authorize(token);
+    const normalizedAlias = this.normalizeAlias(userAlias);
+    await this.requireExistingUser(normalizedAlias);
+    this.requirePageSize(pageSize);
+
+    const page = await this.daoFactory.createFollowDao().getFollowers(
+      normalizedAlias,
+      pageSize,
+      lastItem === null ? null : this.requireAlias(lastItem),
+    );
+    return this.toUserPage(page.items, page.hasMore);
   }
 
   public async loadMoreFollowees(
@@ -27,7 +37,17 @@ export class FollowService {
     pageSize: number,
     lastItem: User | null,
   ): Promise<[User[], boolean]> {
-    return this.getPage(token, userAlias, pageSize, lastItem);
+    await this.authorizationService.authorize(token);
+    const normalizedAlias = this.normalizeAlias(userAlias);
+    await this.requireExistingUser(normalizedAlias);
+    this.requirePageSize(pageSize);
+
+    const page = await this.daoFactory.createFollowDao().getFollowees(
+      normalizedAlias,
+      pageSize,
+      lastItem === null ? null : this.requireAlias(lastItem),
+    );
+    return this.toUserPage(page.items, page.hasMore);
   }
 
   public async follow(
@@ -69,13 +89,15 @@ export class FollowService {
   }
 
   public async getFollowerCount(token: string, user: User): Promise<number> {
-    this.requireTarget(token, user);
-    return await FakeData.instance.getFollowerCount(user.alias);
+    await this.authorizationService.authorize(token);
+    return (await this.requireExistingUser(this.requireAlias(user)))
+      .followerCount;
   }
 
   public async getFolloweeCount(token: string, user: User): Promise<number> {
-    this.requireTarget(token, user);
-    return await FakeData.instance.getFolloweeCount(user.alias);
+    await this.authorizationService.authorize(token);
+    return (await this.requireExistingUser(this.requireAlias(user)))
+      .followeeCount;
   }
 
   public async getIsFollowerStatus(
@@ -122,24 +144,22 @@ export class FollowService {
     }
   }
 
-  private getPage(
-    token: string,
-    userAlias: string,
-    pageSize: number,
-    lastItem: User | null,
-  ): [User[], boolean] {
-    this.requireText(token, "token");
-    this.requireText(userAlias, "user alias");
-    if (typeof pageSize !== "number" || pageSize < 1) {
-      throw new ClientError("Missing page size");
-    }
-
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
-  }
-
-  private requireTarget(token: string, user: User): void {
-    this.requireText(token, "token");
-    this.requireAlias(user);
+  private async toUserPage(
+    aliases: string[],
+    hasMore: boolean,
+  ): Promise<[User[], boolean]> {
+    // UserDao.getUsers preserves this alias order after DynamoDB BatchGet.
+    const records = await this.daoFactory.createUserDao().getUsers(aliases);
+    const users = records.map(
+      (record) =>
+        new User(
+          record.firstName,
+          record.lastName,
+          record.alias,
+          record.imageUrl,
+        ),
+    );
+    return [users, hasMore];
   }
 
   private requireAlias(user: User): string {
@@ -151,7 +171,15 @@ export class FollowService {
       throw new ClientError("Missing user");
     }
 
-    const trimmed = user.alias.trim();
+    return this.normalizeAlias(user.alias);
+  }
+
+  private normalizeAlias(alias: string): string {
+    if (typeof alias !== "string" || alias.trim() === "") {
+      throw new ClientError("Missing user alias");
+    }
+
+    const trimmed = alias.trim();
     const normalized = trimmed.startsWith("@") ? trimmed : `@${trimmed}`;
     if (!/^@[A-Za-z0-9]+$/.test(normalized)) {
       throw new ClientError(
@@ -161,9 +189,9 @@ export class FollowService {
     return normalized;
   }
 
-  private requireText(value: string, label: string): void {
-    if (typeof value !== "string" || value.trim() === "") {
-      throw new ClientError(`Missing ${label}`);
+  private requirePageSize(pageSize: number): void {
+    if (!Number.isInteger(pageSize) || pageSize < 1) {
+      throw new ClientError("Page size must be a positive integer");
     }
   }
 }

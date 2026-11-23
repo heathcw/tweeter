@@ -113,3 +113,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Replace dummy follow, unfollow, and is-follower behavior with authenticated persistent operations. Derive the acting user only from the token, reject self-follow, duplicate follow, invalid unfollow, missing users, and bad aliases, return persisted target counts, share the injected FollowService across Lambdas, grant is-follower least-privilege user reads, and make the client switch back to the Follow state after a successful unfollow.
 - Review: Now follow and unfollow work
+
+## 2026-11-22: tweeter-web-starter/tweeter-server/src/service/FollowService.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Replace the remaining FakeData-based follower/followee counts and lists with authenticated DAO access. Read persisted counters, normalize and validate aliases and page sizes, page relationship aliases alphabetically in both directions, preserve that order through DynamoDB batch user lookup, map records to domain users, and retain accurate cursor and has-more behavior.
+- Review: Follower and followee counts look good
