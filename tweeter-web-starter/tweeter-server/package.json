@@ -7,6 +7,8 @@
     "build:test": "tsc -p tsconfig.test.json",
     "pretest": "npm --prefix ../tweeter-shared run compile",
     "test": "npm run build:test && node --test dist-test/test/services.test.js",
+    "preseed:demo": "npm --prefix ../tweeter-shared run compile",
+    "seed:demo": "npm run build && node dist/scripts/seedDemoData.js",
     "bundle": "npm run bundle:register && npm run bundle:login && npm run bundle:logout && npm run bundle:get-user && npm run bundle:post-status && npm run bundle:story && npm run bundle:feed && npm run bundle:follow && npm run bundle:unfollow && npm run bundle:is-follower && npm run bundle:follower-count && npm run bundle:followee-count && npm run bundle:follower-list && npm run bundle:followee-list",
     "bundle:register": "esbuild src/lambda/RegisterLambda.ts --bundle --platform=node --target=node20 --outfile=build/RegisterFunction/index.js --sourcemap",
     "bundle:login": "esbuild src/lambda/LoginLambda.ts --bundle --platform=node --target=node20 --outfile=build/LoginFunction/index.js --sourcemap",

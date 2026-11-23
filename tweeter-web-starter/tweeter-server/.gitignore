@@ -4,3 +4,4 @@ dist-test
 build
 .aws-sam
 packaged.yaml
+.demo-seeds/

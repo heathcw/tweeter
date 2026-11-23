@@ -155,3 +155,9 @@
 - Tool: Codex (GPT-6 Luna)
 - Task: Configure server unit tests with ts-mockito DAO mocks and spies, cover password hashing and login, session sliding expiration and logout, service follow constraints, DynamoDB transactional follow writes, alphabetical pagination, story/feed cursor handling, fan-out to current followers, and preserving existing feed entries after unfollow.
 - Review: Initially, this commit was quite poor and did not use ts-mockito or jest and instead duplicated a lot of code. I worked with AI to use mocks and spies instead to avoud code duplication and this commit is better now.
+
+## 2026-11-23: tweeter-web-starter/tweeter-server/src/scripts/seedDemoData.ts (new file), tweeter-web-starter/tweeter-server/DEMO-DATA.md (new file), tweeter-web-starter/tweeter-server/package.json, tweeter-web-starter/tweeter-server/.gitignore, AI-ATTRIBUTION.md
+
+- Tool: Codex (GPT-6 Luna)
+- Task: Add an explicitly confirmed AWS demo seed and cleanup workflow that creates two randomly named accounts, uploads their profile images, relates them, publishes twelve statuses into stories and precomputed feeds, stores a local manifest, and refuses cleanup if the accounts or their story/feed data contain unrelated passoff changes.
+- Review: The app is prepared to stop using fake data. Login and register work now. Redeploying the APIs should get rid of the fake story and feed data. Looks good other than that.
