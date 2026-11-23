@@ -24,7 +24,15 @@ export interface FollowDaoFactory {
   createAuthTokenDao(): AuthTokenDao;
 }
 
-export interface DaoFactory extends UserDaoFactory, FollowDaoFactory {
+export interface StoryDaoFactory {
   createStoryDao(): StoryDao;
+  createUserDao(): UserDao;
+  createAuthTokenDao(): AuthTokenDao;
+}
+
+export interface DaoFactory
+  extends UserDaoFactory,
+    FollowDaoFactory,
+    StoryDaoFactory {
   createFeedDao(): FeedDao;
 }

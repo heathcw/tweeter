@@ -4,6 +4,7 @@ export type { AuthTokenDao } from "./AuthTokenDao";
 export type {
   DaoFactory,
   FollowDaoFactory,
+  StoryDaoFactory,
   UserDaoFactory,
 } from "./DaoFactory";
 export type { FeedDao } from "./FeedDao";

@@ -119,3 +119,9 @@
 - Tool: Cursor (GPT-5.6 Sol)
 - Task: Replace the remaining FakeData-based follower/followee counts and lists with authenticated DAO access. Read persisted counters, normalize and validate aliases and page sizes, page relationship aliases alphabetically in both directions, preserve that order through DynamoDB batch user lookup, map records to domain users, and retain accurate cursor and has-more behavior.
 - Review: Follower and followee counts look good
+
+## 2026-11-22: tweeter-web-starter/tweeter-server/src/dao/StoryDao.ts, tweeter-web-starter/tweeter-server/src/dao/DaoFactory.ts, tweeter-web-starter/tweeter-server/src/dao/aws/AwsDaoFactory.ts, tweeter-web-starter/tweeter-server/src/dao/dynamodb/DynamoDbStoryDao.ts (new file), tweeter-web-starter/tweeter-server/src/dao/dynamodb/index.ts, tweeter-web-starter/tweeter-server/src/dao/index.ts, tweeter-web-starter/tweeter-server/src/index.ts, AI-ATTRIBUTION.md
+
+- Tool: Cursor (GPT-5.6 Sol)
+- Task: Implement the DynamoDB story DAO with complete status and author snapshots, conditional duplicate-key protection, strongly consistent newest-first queries, timestamp cursors, one-item lookahead for accurate has-more values, page and cursor validation, and abstract-factory wiring.
+- Review: The put status and get story functions look good.

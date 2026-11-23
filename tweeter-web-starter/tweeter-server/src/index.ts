@@ -12,6 +12,7 @@ export type {
   ImageDao,
   ImageUpload,
   StoryDao,
+  StoryDaoFactory,
   UserDao,
   UserDaoFactory,
   UserRecord,
